@@ -1,2 +1,2 @@
 # mapis
-Markod REST API server
+Markod REST API server code
