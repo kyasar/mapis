@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class MapisApplicationTests {
+public class ProductTest {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -40,7 +40,7 @@ public class MapisApplicationTests {
 
 		ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
 		JSONObject jsonObject = new JSONObject(result.getBody());
-		System.out.println(jsonObject.get("_id"));
+		System.out.println(jsonObject.get("id").toString());
 		assertEquals(201, result.getStatusCode().value());
 
 		result = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
@@ -51,16 +51,16 @@ public class MapisApplicationTests {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		entity = new HttpEntity<String>(body.toString(), headers);
 
-		result = restTemplate.exchange(uri + "/" + jsonObject.get("_id"), HttpMethod.PUT, entity, String.class);
+		result = restTemplate.exchange(uri + "/" + jsonObject.get("id").toString(), HttpMethod.PUT, entity, String.class);
 		jsonObject = new JSONObject(result.getBody());
-		System.out.println(jsonObject.get("_id"));
+		System.out.println(jsonObject.get("id").toString());
 		assertEquals(200, result.getStatusCode().value());
 
-		result = restTemplate.exchange(uri + "/" + jsonObject.get("_id"), HttpMethod.GET, entity, String.class);
+		result = restTemplate.exchange(uri + "/" + jsonObject.get("id").toString(), HttpMethod.GET, entity, String.class);
 		System.out.println(result.getBody());
 		assertEquals(200, result.getStatusCode().value());
 
-		result = restTemplate.exchange(uri + "/" + jsonObject.get("_id"), HttpMethod.DELETE, entity, String.class);
+		result = restTemplate.exchange(uri + "/" + jsonObject.get("id").toString(), HttpMethod.DELETE, entity, String.class);
 		assertEquals(200, result.getStatusCode().value());
 	}
 }

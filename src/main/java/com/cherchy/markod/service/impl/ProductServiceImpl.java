@@ -20,13 +20,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product findOne(String _id) {
-        return productRepository.findOne(_id);
+    public Product findOne(String id) {
+        return productRepository.findOne(id);
     }
 
     @Override
     public Product create(Product p) {
-        if (p.get_id() != null) {
+        if (p.getId() != null) {
             return null;
         }
         return productRepository.save(p);
@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product update(Product p) {
-        Product pPresent = productRepository.findOne(p.get_id());
+        Product pPresent = productRepository.findOne(p.getId().toString());
         if (pPresent == null) {
             // Cannot update
             return null;
@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void delete(String _id) {
-        productRepository.delete(_id);
+    public void delete(String id) {
+        productRepository.delete(id);
     }
 }

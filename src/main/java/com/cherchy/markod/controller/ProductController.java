@@ -2,9 +2,11 @@ package com.cherchy.markod.controller;
 
 import com.cherchy.markod.model.Product;
 import com.cherchy.markod.service.ProductService;
+import com.sun.corba.se.spi.ior.ObjectKey;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +38,9 @@ public class ProductController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseEntity<Product> getProduct(
-            @PathVariable(value="_id") String _id)
+            @PathVariable(value="_id") String id)
     {
-        Product p = productService.findOne(_id);
+        Product p = productService.findOne(id);
         if (p != null) {
             return new ResponseEntity<>(p, HttpStatus.OK);
         } else {
@@ -86,14 +88,14 @@ public class ProductController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseEntity<Product> updateProduct(
-            @PathVariable(value="_id") String _id,
+            @PathVariable(value="_id") String id,
             @RequestBody Product p)
     {
-        Product present = productService.findOne(_id);
+        Product present = productService.findOne(id);
         if (present == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        p.set_id(present.get_id());
+        p.setId(present.getId());
 
         Product savedProduct = productService.update(p);
         if (savedProduct != null)
@@ -106,14 +108,14 @@ public class ProductController {
             value = "/{_id}",
             method= DELETE)
     public ResponseEntity<Product> removeProduct(
-            @PathVariable(value="_id") String _id)
+            @PathVariable(value="_id") String id)
     {
         //log.debug("Delete role: " + request.isUserInRole("ADMIN"));
-        Product present = productService.findOne(_id);
+        Product present = productService.findOne(id);
         if (present == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        productService.delete(_id);
+        productService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

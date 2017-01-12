@@ -1,5 +1,6 @@
 package com.cherchy.markod.model;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
@@ -10,10 +11,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Product {
 
     @Id
-    @Indexed
-    private String _id;
+    private String id;
 
     private String name;
+
+    private Price price;
 
     @Indexed
     private String barcode;
@@ -21,17 +23,22 @@ public class Product {
     public Product() {
     }
 
+    public Product(String id, Price price) {
+        this.id = id;
+        this.price = price;
+    }
+
     public Product(String name, String barcode) {
         this.name = name;
         this.barcode = barcode;
     }
 
-    public String get_id() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -50,4 +57,11 @@ public class Product {
         this.barcode = barcode;
     }
 
+    public Price getPrice() {
+        return price;
+    }
+
+    public void setPrice(Price price) {
+        this.price = price;
+    }
 }
