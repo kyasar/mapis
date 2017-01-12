@@ -15,7 +15,7 @@ public class Campaign {
 
     private String title;
 
-    //@DBRef(lazy = true)
+    //@DBRef(lazy =  -> ref is not a solution relation contains price
     private List<Product> products;
 
     public Campaign(String title, List<Product> products) {
