@@ -8,6 +8,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
 import java.net.UnknownHostException;
 
@@ -23,8 +26,13 @@ public class MongoDBConfig {
     }
 
     @Bean
-    public MongoTemplate mongoTemplate() throws UnknownHostException{
-        return new MongoTemplate(mongoDbFactory());
+    public MongoTemplate mongoTemplate() throws UnknownHostException {
+        //remove _class
+        MappingMongoConverter converter =
+                new MappingMongoConverter(mongoDbFactory(), new MongoMappingContext());
+        converter.setTypeMapper(new DefaultMongoTypeMapper(null));
+
+        return new MongoTemplate(mongoDbFactory(), converter);
     }
 
 }
