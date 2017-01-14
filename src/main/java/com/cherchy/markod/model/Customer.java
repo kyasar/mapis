@@ -34,6 +34,9 @@ public class Customer {
     private List<Market> markets;
 
     @DBRef
+    private List<Market> followingMarkets;
+
+    @DBRef
     private List<Campaign> campaigns;
 
     public Customer(
@@ -103,6 +106,14 @@ public class Customer {
 
     public void setMarkets(List<Market> markets) {
         this.markets = markets;
+    }
+
+    public List<Market> getFollowingMarkets() {
+        return followingMarkets;
+    }
+
+    public void setFollowingMarkets(List<Market> followingMarkets) {
+        this.followingMarkets = followingMarkets;
     }
 
     public List<Campaign> getCampaigns() {

@@ -1,5 +1,6 @@
 package com.cherchy.markod.model;
 
+import com.sun.istack.internal.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
@@ -13,16 +14,19 @@ public class Product {
     @Id
     private String id;
 
+    @NotNull
     private String name;
 
     private Price price;
 
+    @NotNull
     @Indexed
     private String barcode;
 
     public Product() {
     }
 
+    // Market or Campaign custom price relationship
     public Product(String id, Price price) {
         this.id = id;
         this.price = price;
