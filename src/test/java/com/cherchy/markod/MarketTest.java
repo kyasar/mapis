@@ -8,6 +8,7 @@ import com.cherchy.markod.service.CampaignService;
 import com.cherchy.markod.service.MarketService;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +38,9 @@ public class MarketTest {
 
     @Autowired
     private MarketService marketService;
+
+    @Autowired
+    private CampaignService campaignService;
 
     @Test
     public void t0_setUp() {
@@ -77,10 +81,21 @@ public class MarketTest {
     }
 
     @Test
-    public void t3_getMarket() {
-        Market m = marketService.findOne(marketId);
-        if (m != null) {
-            System.out.println(m.getId() + " " + m.getName());
+    public void t3_updateMarket() {
+        Campaign c = campaignService.findOne("5877d3e7da80440aea4d9d47");
+        if (c == null) {
+            System.out.println("No such campaign found!");
+            Assert.fail();
         }
+        Assert.assertEquals(true, marketService.addCampaign(c, marketId));
+
+        Campaign c1 = campaignService.findOne("587d1a52da80441f036610a1");
+        if (c1 == null) {
+            System.out.println("No such campaign found!");
+            Assert.fail();
+        }
+        Assert.assertEquals(true, marketService.addCampaign(c1, marketId));
+
+        Assert.assertEquals(true, marketService.removeCampaign(c, marketId));
     }
 }

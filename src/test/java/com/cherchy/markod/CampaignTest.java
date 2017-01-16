@@ -4,6 +4,7 @@ import ch.qos.logback.core.net.SyslogOutputStream;
 import com.cherchy.markod.model.Campaign;
 import com.cherchy.markod.model.Price;
 import com.cherchy.markod.model.Product;
+import com.cherchy.markod.repository.ProductRepository;
 import com.cherchy.markod.service.CampaignService;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
@@ -39,81 +40,23 @@ public class CampaignTest {
     @Autowired
     private CampaignService campaignService;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     private static String campaignId;
-
-    @Test
-    public void t0_setUp() {
-        for (String col : mongoTemplate.getCollectionNames()) {
-            if (!col.startsWith("system")) {
-                System.out.println("Remove all collection: " + col);
-                mongoTemplate.remove(new Query(), col);
-            }
-        }
-    }
-
-    @Test
-    public void t1_insertProduct() {
-
-        final String uri = "http://localhost:8080" + "/product";
-
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> entity;
-        ResponseEntity<String> result;
-
-        JSONObject body = new JSONObject();
-        body.put("name", "Urun1");
-        body.put("barcode", "11111");
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        entity = new HttpEntity<String>(body.toString(), headers);
-
-        result = restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
-        System.out.println("Product created id: " + new JSONObject(result.getBody()).get("id"));
-        assertEquals(201, result.getStatusCode().value());
-
-        body.put("name", "Urun2");
-        body.put("barcode", "22222");
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        entity = new HttpEntity<String>(body.toString(), headers);
-
-        result = restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
-        System.out.println("Product created id: " + new JSONObject(result.getBody()).get("id"));
-        assertEquals(201, result.getStatusCode().value());
-
-        body.put("name", "Urun3");
-        body.put("barcode", "33333");
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        entity = new HttpEntity<String>(body.toString(), headers);
-
-        result = restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
-        System.out.println("Product created id: " + new JSONObject(result.getBody()).get("id"));
-        assertEquals(201, result.getStatusCode().value());
-    }
 
     @Test
     public void t2_createCampaign() {
 
-        final String uri = "http://localhost:8080" + "/product";
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
+        List<Product> products = productRepository.findByName("Urun1");
+        List<Product> campaignProducts = new ArrayList<>();
 
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<String>(headers);
-
-        ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-        assertEquals(200, result.getStatusCode().value());
-        System.out.println(result.getBody());
-
-        List<Product> products = new ArrayList<>();
-        JSONArray jsonArray = new JSONArray(result.getBody());
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonobject = jsonArray.getJSONObject(i);
-            String id = jsonobject.getString("id");
-            System.out.println("Adding product: " + id);
-            products.add(new Product(id, new Price(10, 4)));
+        int  i =0;
+        for (Product p : products) {
+            campaignProducts.add(new Product(p.getId(), new Price(10 + (i++), 5)));
         }
 
-        Campaign c1 = new Campaign("Campaign in a Market 1", products);
+        Campaign c1 = new Campaign("Campaign1", campaignProducts);
         campaignService.create(c1);
         campaignId = c1.getId();
         System.out.println("Campaign created: " + campaignId);
