@@ -18,4 +18,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     //GeoResults<Product> findByLocationNear(Point location, Distance distance);
 
     //List<Product> findByLocationWithin(Polygon polygon);
+
+    List<Product> findByName(String name);
 }
