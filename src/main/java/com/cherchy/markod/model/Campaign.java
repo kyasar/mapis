@@ -1,5 +1,6 @@
 package com.cherchy.markod.model;
 
+import com.sun.istack.internal.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -13,7 +14,11 @@ public class Campaign {
     @Id
     private String id;
 
+    @NotNull
     private String title;
+
+    @NotNull
+    private boolean active;
 
     //@DBRef(lazy =  -> ref is not a solution relation contains price
     private List<Product> products;
@@ -37,6 +42,14 @@ public class Campaign {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public List<Product> getProducts() {
