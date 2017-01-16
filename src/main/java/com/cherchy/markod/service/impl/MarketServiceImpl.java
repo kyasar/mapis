@@ -1,6 +1,9 @@
 package com.cherchy.markod.service.impl;
 
+import com.cherchy.markod.model.Campaign;
+import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
+import com.cherchy.markod.repository.CustomerRepository;
 import com.cherchy.markod.repository.MarketRepository;
 import com.cherchy.markod.service.MarketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,9 @@ public class MarketServiceImpl implements MarketService {
 
     @Autowired
     private MarketRepository marketRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Override
     public List<Market> findAll() {
@@ -40,6 +46,9 @@ public class MarketServiceImpl implements MarketService {
             return null;
         }
 
+        m.setCampaigns(present.getCampaigns());
+        m.setFollowers(present.getFollowers());
+
         return marketRepository.save(m);
     }
 
@@ -47,4 +56,53 @@ public class MarketServiceImpl implements MarketService {
     public void delete(String id) {
         marketRepository.delete(id);
     }
+
+    @Override
+    public boolean addCampaign(Campaign campaign, String mid) {
+        Market m = marketRepository.findOne(mid);
+        if (m == null) {
+            return false;
+        }
+
+        m.getCampaigns().add(campaign);
+        marketRepository.save(m);
+        return true;
+    }
+
+    @Override
+    public boolean removeCampaign(Campaign campaign, String mid) {
+        Market m = marketRepository.findOne(mid);
+        if (m == null) {
+            return false;
+        }
+
+        m.getCampaigns().removeIf(c -> c.getId().equals(campaign.getId()));
+        marketRepository.save(m);
+        return true;
+    }
+
+    @Override
+    public boolean addFollower(Customer customer, String mid) {
+        Market m = marketRepository.findOne(mid);
+        if (m == null) {
+            return false;
+        }
+
+        m.getFollowers().add(customer);
+        marketRepository.save(m);
+        return true;
+    }
+
+    @Override
+    public boolean removeFollower(Customer customer, String mid) {
+        Market m = marketRepository.findOne(mid);
+        if (m == null) {
+            return false;
+        }
+
+        m.getFollowers().remove(customer);
+        marketRepository.save(m);
+        return true;
+    }
+
 }

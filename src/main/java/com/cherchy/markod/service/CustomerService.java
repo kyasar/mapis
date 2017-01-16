@@ -1,7 +1,9 @@
 package com.cherchy.markod.service;
 
 import com.cherchy.markod.model.Customer;
+import com.cherchy.markod.model.Market;
 
+import javax.management.relation.Role;
 import java.util.List;
 
 public interface CustomerService {
@@ -15,4 +17,5 @@ public interface CustomerService {
     Customer update(Customer p);
 
     void delete(String id);
+
 }
