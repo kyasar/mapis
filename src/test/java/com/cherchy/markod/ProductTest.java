@@ -32,7 +32,6 @@ public class ProductTest {
 
 	@Autowired
 	private ProductService productService;
-	private ProductRepository productRepository;
 
 	@Test
 	public void t0_setUp() {

@@ -9,6 +9,7 @@ import com.cherchy.markod.service.CampaignService;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,9 +47,14 @@ public class CampaignTest {
     private static String campaignId;
 
     @Test
+    public void t0_setUp() {
+        mongoTemplate.remove(new Query(), "campaigns");
+    }
+
+    @Test
     public void t2_createCampaign() {
 
-        List<Product> products = productRepository.findByName("Urun1");
+        List<Product> products = productRepository.findByNameContaining("run1");
         List<Product> campaignProducts = new ArrayList<>();
 
         int  i =0;
@@ -68,7 +74,19 @@ public class CampaignTest {
         Campaign c = campaignService.findOne(campaignId);
         System.out.println("Products in campaign:");
         for (Product p : c.getProducts()) {
-            System.out.println(p.getId() + " " + p.getName());
+            System.out.println(p.getId() + " " + p.getPrice().toString());
+        }
+    }
+
+    @Test
+    public void t3_updateCampaign() {
+        Product product = productRepository.findByNameContaining("run2").get(0);
+        Assert.assertEquals(true, campaignService.removeProduct(product.getId(), campaignId));
+        Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9, 99)), campaignId));
+        System.out.println("Products in campaign:");
+        Campaign c = campaignService.findOne(campaignId);
+        for (Product p : c.getProducts()) {
+            System.out.println(p.getId() + " " + p.getPrice().toString());
         }
     }
 }

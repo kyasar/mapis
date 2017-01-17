@@ -26,4 +26,9 @@ public class Price {
     public void setRight(int right) {
         this.right = right;
     }
+
+    @Override
+    public String toString() {
+        return left + "." + right;
+    }
 }

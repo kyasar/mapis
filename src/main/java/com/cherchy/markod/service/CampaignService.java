@@ -18,4 +18,8 @@ public interface CampaignService {
 
     void delete(String id);
 
+    boolean addProduct(Product product, String cid);
+
+    boolean removeProduct(String pid, String cid);
+
 }

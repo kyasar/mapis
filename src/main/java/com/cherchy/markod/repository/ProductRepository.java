@@ -19,5 +19,5 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
     //List<Product> findByLocationWithin(Polygon polygon);
 
-    List<Product> findByName(String name);
+    List<Product> findByNameContaining(String name);
 }

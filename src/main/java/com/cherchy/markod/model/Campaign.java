@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection="campaigns")
@@ -21,7 +22,7 @@ public class Campaign {
     private boolean active;
 
     //@DBRef(lazy =  -> ref is not a solution relation contains price
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     public Campaign(String title, List<Product> products) {
         this.title = title;
