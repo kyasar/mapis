@@ -1,10 +1,8 @@
 package com.cherchy.markod;
 
-import com.cherchy.markod.model.Campaign;
-import com.cherchy.markod.model.Market;
-import com.cherchy.markod.model.Price;
-import com.cherchy.markod.model.Product;
+import com.cherchy.markod.model.*;
 import com.cherchy.markod.service.CampaignService;
+import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,6 +17,7 @@ import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.*;
+import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,6 +40,9 @@ public class MarketTest {
 
     @Autowired
     private CampaignService campaignService;
+
+    @Autowired
+    private CustomerService customerService;
 
     @Test
     public void t0_setUp() {
@@ -82,20 +84,11 @@ public class MarketTest {
 
     @Test
     public void t3_updateMarket() {
-        Campaign c = campaignService.findOne("5877d3e7da80440aea4d9d47");
-        if (c == null) {
-            System.out.println("No such campaign found!");
-            Assert.fail();
-        }
-        Assert.assertEquals(true, marketService.addCampaign(c, marketId));
+        Customer customer = customerService.findAll().get(0);
+        System.out.println("Customer id: " + customer.getId() + " going to follow market id: " + marketId);
 
-        Campaign c1 = campaignService.findOne("587d1a52da80441f036610a1");
-        if (c1 == null) {
-            System.out.println("No such campaign found!");
-            Assert.fail();
-        }
-        Assert.assertEquals(true, marketService.addCampaign(c1, marketId));
+        Assert.assertEquals(true, marketService.addFollower(customer.getId(), marketId));
 
-        Assert.assertEquals(true, marketService.removeCampaign(c, marketId));
+        Assert.assertEquals(customer.getId(), marketService.findOne(marketId).getFollowers().get(0));
     }
 }

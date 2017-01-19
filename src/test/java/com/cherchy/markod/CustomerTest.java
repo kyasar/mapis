@@ -52,24 +52,4 @@ public class CustomerTest {
             }
         }
     }
-
-    static String marketId;
-
-    @Test
-    public void t2_getMarkets() {
-
-        List<Customer> customers = customerService.findAll();
-        for (Customer m : customers) {
-            System.out.println(m.getId() + " " + m.getName());
-            marketId = m.getId();
-        }
-    }
-
-    @Test
-    public void t3_getMarket() {
-        Customer m = customerService.findOne(marketId);
-        if (m != null) {
-            System.out.println(m.getId() + " " + m.getName());
-        }
-    }
 }

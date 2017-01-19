@@ -9,6 +9,7 @@ import com.cherchy.markod.service.MarketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -82,27 +83,48 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
-    public boolean addFollower(Customer customer, String mid) {
-        Market m = marketRepository.findOne(mid);
-        if (m == null) {
+    public boolean addFollower(String fid, String mid) {
+        Market market = marketRepository.findOne(mid);
+        if (market == null) {
             return false;
         }
 
-        m.getFollowers().add(customer);
-        marketRepository.save(m);
+        Customer customer = customerRepository.findOne(fid);
+        if (customer == null) {
+            return false;
+        }
+
+        market.addToFollowers(fid);
+        if (marketRepository.save(market) == null)
+            return false;
+
+        customer.followMarket(market);
+        if (customerRepository.save(customer) == null)
+            return false;
+
         return true;
     }
 
     @Override
-    public boolean removeFollower(Customer customer, String mid) {
-        Market m = marketRepository.findOne(mid);
-        if (m == null) {
+    public boolean removeFollower(String fid, String mid) {
+        Market market = marketRepository.findOne(mid);
+        if (market == null) {
             return false;
         }
 
-        m.getFollowers().remove(customer);
-        marketRepository.save(m);
+        Customer customer = customerRepository.findOne(fid);
+        if (customer == null) {
+            return false;
+        }
+
+        market.removeFromFollowers(fid);
+        if (marketRepository.save(market) == null)
+            return false;
+
+        customer.unfollowMarket(mid);
+        if (customerRepository.save(customer) == null)
+            return false;
+
         return true;
     }
-
 }

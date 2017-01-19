@@ -22,8 +22,8 @@ public interface MarketService {
 
     boolean removeCampaign(Campaign campaign, String mid);
 
-    boolean addFollower(Customer customer, String mid);
+    boolean addFollower(String fid, String mid);
 
-    boolean removeFollower(Customer customer, String mid);
+    boolean removeFollower(String fid, String mid);
 
 }

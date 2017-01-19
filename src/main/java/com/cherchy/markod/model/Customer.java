@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,6 +52,12 @@ public class Customer {
         this.roles = new HashSet<String>();
         this.roles.add("ROLE_USER");
     }
+
+    public Customer(String id) {
+        this.id = id;
+    }
+
+    public Customer() { }
 
     public String getId() {
         return id;
@@ -122,5 +129,17 @@ public class Customer {
 
     public void setCampaigns(List<Campaign> campaigns) {
         this.campaigns = campaigns;
+    }
+
+    public void followMarket(Market m) {
+        if (this.followingMarkets == null)
+            this.followingMarkets = new ArrayList<>();
+        this.followingMarkets.add(m);
+    }
+
+    public void unfollowMarket(String mid) {
+        if (this.followingMarkets == null)
+            return;
+        this.followingMarkets.removeIf(id -> id.equals(mid));
     }
 }
