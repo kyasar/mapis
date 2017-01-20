@@ -44,6 +44,7 @@ public class MarketTest {
     @Autowired
     private CustomerService customerService;
 
+    /*
     @Test
     public void t0_setUp() {
         mongoTemplate.remove(new Query(), "markets");
@@ -69,7 +70,7 @@ public class MarketTest {
             }
         }
     }
-
+    */
     static String marketId;
 
     @Test
@@ -84,11 +85,15 @@ public class MarketTest {
 
     @Test
     public void t3_updateMarket() {
-        Customer customer = customerService.findAll().get(0);
+        Customer customer = customerService.findOne("58827691da804429e444a0ff");
         System.out.println("Customer id: " + customer.getId() + " going to follow market id: " + marketId);
 
         Assert.assertEquals(true, marketService.addFollower(customer.getId(), marketId));
 
-        Assert.assertEquals(customer.getId(), marketService.findOne(marketId).getFollowers().get(0));
+        for (String fid : marketService.findOne(marketId).getFollowers()) {
+            System.out.println("Follower id: " + fid);
+        }
+        System.out.println("Removing Follower id: " + customer.getId());
+        Assert.assertEquals(true, marketService.removeFollower(customer.getId(), marketId));
     }
 }

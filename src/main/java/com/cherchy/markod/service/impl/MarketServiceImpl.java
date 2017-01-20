@@ -6,14 +6,23 @@ import com.cherchy.markod.model.Market;
 import com.cherchy.markod.repository.CustomerRepository;
 import com.cherchy.markod.repository.MarketRepository;
 import com.cherchy.markod.service.MarketService;
+import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+
 @Service
 public class MarketServiceImpl implements MarketService {
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Autowired
     private MarketRepository marketRepository;
@@ -94,9 +103,15 @@ public class MarketServiceImpl implements MarketService {
             return false;
         }
 
+        /*
         market.addToFollowers(fid);
         if (marketRepository.save(market) == null)
-            return false;
+            return false;*/
+
+        WriteResult res = mongoTemplate.updateFirst(
+                new Query(where("_id").is(mid)),
+                new Update().addToSet("followers", fid),
+                Market.class);
 
         customer.followMarket(market);
         if (customerRepository.save(customer) == null)
@@ -117,9 +132,10 @@ public class MarketServiceImpl implements MarketService {
             return false;
         }
 
-        market.removeFromFollowers(fid);
-        if (marketRepository.save(market) == null)
-            return false;
+        WriteResult res = mongoTemplate.updateFirst(
+                new Query(where("_id").is(mid)),
+                new Update().pull("followers", fid),
+                Market.class);
 
         customer.unfollowMarket(mid);
         if (customerRepository.save(customer) == null)

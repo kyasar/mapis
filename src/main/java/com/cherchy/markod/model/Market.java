@@ -31,7 +31,7 @@ public class Market {
     private Point location;
 
     // list of ids of follower customers
-    private List<String> followers;
+    private List<String> followers = new ArrayList<>();
 
     @DBRef
     private List<Campaign> campaigns = new ArrayList<>();
