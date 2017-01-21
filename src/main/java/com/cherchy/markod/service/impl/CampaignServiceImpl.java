@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -106,5 +107,12 @@ public class CampaignServiceImpl implements CampaignService {
         if (res.getN() == 0)
             return false;
         return true;
+    }
+
+    @Override
+    public List<Campaign> findAll(Date date) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("startDate").gte(date));
+        return mongoTemplate.find(query, Campaign.class);
     }
 }

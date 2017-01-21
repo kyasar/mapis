@@ -23,10 +23,9 @@ import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,6 +44,7 @@ public class CampaignTest {
     private ProductRepository productRepository;
 
     private static String campaignId;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     @Test
     public void t0_setUp() {
@@ -52,7 +52,7 @@ public class CampaignTest {
     }
 
     @Test
-    public void t2_createCampaign() {
+    public void t2_createCampaign() throws ParseException {
 
         List<Product> products = productRepository.findByNameContaining("run");
         List<Product> campaignProducts = new ArrayList<>();
@@ -62,13 +62,13 @@ public class CampaignTest {
             campaignProducts.add(new Product(p.getId(), new Price(10 + (i++), 5)));
         }
 
-        Campaign c1 = new Campaign("Campaign1", campaignProducts);
+        Campaign c1 = new Campaign("Campaign1", sdf.parse("10/01/2017"), sdf.parse("14/01/2017"), campaignProducts);
         campaignService.create(c1);
         campaignId = c1.getId();
         System.out.println("Campaign created: " + campaignId + " " + campaignProducts.size());
 
         campaignProducts.removeIf(e -> e.getPrice().getLeft() == 10);
-        c1 = new Campaign("Campaign2", campaignProducts);
+        c1 = new Campaign("Campaign2", sdf.parse("12/01/2017"), sdf.parse("17/01/2017"), campaignProducts);
         campaignService.create(c1);
         campaignId = c1.getId();
         System.out.println("Campaign created: " + campaignId);
@@ -108,4 +108,10 @@ public class CampaignTest {
         }
     }
 
+    @Test
+    public void t4_testDate() throws ParseException {
+        Assert.assertEquals(2, campaignService.findAll(sdf.parse("08/01/2017")).size());
+        Assert.assertEquals(1, campaignService.findAll(sdf.parse("11/01/2017")).size());
+        Assert.assertEquals(0, campaignService.findAll(sdf.parse("13/01/2017")).size());
+    }
 }

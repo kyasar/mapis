@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Document(collection="campaigns")
@@ -21,11 +22,19 @@ public class Campaign {
     @NotNull
     private boolean active;
 
+    @NotNull
+    private Date startDate;
+
+    @NotNull
+    private Date endDate;
+
     //@DBRef(lazy =  -> ref is not a solution relation contains price
     private List<Product> products = new ArrayList<>();
 
-    public Campaign(String title, List<Product> products) {
+    public Campaign(String title, Date startDate, Date endDate, List<Product> products) {
         this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.products = products;
     }
 
@@ -59,5 +68,21 @@ public class Campaign {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }
