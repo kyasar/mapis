@@ -123,4 +123,13 @@ public class MarketServiceImpl implements MarketService {
         query.addCriteria(Criteria.where("followingMarkets").in(id));
         return mongoTemplate.find(query, Customer.class);
     }
+
+    @Override
+    public List<Campaign> getCampaigns(String id) {
+        Market market = marketRepository.findOne(id);
+        if (market != null) {
+            return market.getCampaigns();
+        }
+        return null;
+    }
 }

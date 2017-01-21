@@ -25,4 +25,6 @@ public interface MarketService {
     boolean removeCampaign(String campaignId, String mid);
 
     List<Customer> getFollowers(String id);
+
+    List<Campaign> getCampaigns(String id);
 }

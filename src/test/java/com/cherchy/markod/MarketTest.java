@@ -102,8 +102,9 @@ public class MarketTest {
 
         Assert.assertEquals(false, marketService.removeCampaign(c1.getId(), "wrongId"));
         Assert.assertEquals(false, marketService.removeCampaign(c1.getId() + "a", marketId));
-        Assert.assertEquals(2, marketService.findOne(marketId).getCampaigns().size());
+        Assert.assertEquals(2, marketService.getCampaigns(marketId).size());
+        Assert.assertEquals(null, marketService.getCampaigns(marketId + "1"));
         Assert.assertEquals(true, marketService.removeCampaign(c1.getId(), marketId));
-        Assert.assertEquals(1, marketService.findOne(marketId).getCampaigns().size());
+        Assert.assertEquals(1, marketService.getCampaigns(marketId).size());
     }
 }
