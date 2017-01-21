@@ -54,7 +54,7 @@ public class CampaignTest {
     @Test
     public void t2_createCampaign() {
 
-        List<Product> products = productRepository.findByNameContaining("run1");
+        List<Product> products = productRepository.findByNameContaining("run");
         List<Product> campaignProducts = new ArrayList<>();
 
         int  i =0;
@@ -63,6 +63,12 @@ public class CampaignTest {
         }
 
         Campaign c1 = new Campaign("Campaign1", campaignProducts);
+        campaignService.create(c1);
+        campaignId = c1.getId();
+        System.out.println("Campaign created: " + campaignId + " " + campaignProducts.size());
+
+        campaignProducts.removeIf(e -> e.getPrice().getLeft() == 10);
+        c1 = new Campaign("Campaign2", campaignProducts);
         campaignService.create(c1);
         campaignId = c1.getId();
         System.out.println("Campaign created: " + campaignId);
@@ -78,6 +84,7 @@ public class CampaignTest {
         }
     }
 
+    /*
     @Test
     public void t3_updateCampaign() {
         Product product = productRepository.findByNameContaining("run2").get(0);
@@ -89,4 +96,5 @@ public class CampaignTest {
             System.out.println(p.getId() + " " + p.getPrice().toString());
         }
     }
+    */
 }

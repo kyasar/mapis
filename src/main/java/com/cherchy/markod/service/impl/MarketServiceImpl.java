@@ -5,10 +5,13 @@ import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
 import com.cherchy.markod.repository.CustomerRepository;
 import com.cherchy.markod.repository.MarketRepository;
+import com.cherchy.markod.service.CampaignService;
+import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
 import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -28,7 +31,7 @@ public class MarketServiceImpl implements MarketService {
     private MarketRepository marketRepository;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private CampaignService campaignService;
 
     @Override
     public List<Market> findAll() {
@@ -38,6 +41,15 @@ public class MarketServiceImpl implements MarketService {
     @Override
     public Market findOne(String id) {
         return marketRepository.findOne(id);
+    }
+
+    @Override
+    public boolean exists(String id) {
+        List<Market> results =  mongoTemplate.find(new Query(where("_id").is(id)).limit(1), Market.class);
+        if (results.size() > 0)
+            return true;
+        else
+            return false;
     }
 
     @Override
@@ -57,7 +69,6 @@ public class MarketServiceImpl implements MarketService {
         }
 
         m.setCampaigns(present.getCampaigns());
-        m.setFollowers(present.getFollowers());
 
         return marketRepository.save(m);
     }
@@ -68,79 +79,48 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
-    public boolean addCampaign(Campaign campaign, String mid) {
-        Market m = marketRepository.findOne(mid);
-        if (m == null) {
+    public boolean addCampaign(String campaignId, String mid)
+    {
+        if (!marketRepository.exists(mid))
             return false;
-        }
 
-        m.getCampaigns().add(campaign);
-        marketRepository.save(m);
-        return true;
-    }
-
-    @Override
-    public boolean removeCampaign(Campaign campaign, String mid) {
-        Market m = marketRepository.findOne(mid);
-        if (m == null) {
+        Campaign campaign = campaignService.findOne(campaignId);
+        if (campaign == null)
             return false;
-        }
-
-        m.getCampaigns().removeIf(c -> c.getId().equals(campaign.getId()));
-        marketRepository.save(m);
-        return true;
-    }
-
-    @Override
-    public boolean addFollower(String fid, String mid) {
-        Market market = marketRepository.findOne(mid);
-        if (market == null) {
-            return false;
-        }
-
-        Customer customer = customerRepository.findOne(fid);
-        if (customer == null) {
-            return false;
-        }
-
-        /*
-        market.addToFollowers(fid);
-        if (marketRepository.save(market) == null)
-            return false;*/
 
         WriteResult res = mongoTemplate.updateFirst(
                 new Query(where("_id").is(mid)),
-                new Update().addToSet("followers", fid),
+                new Update().addToSet("campaigns", campaign),
                 Market.class);
 
-        customer.followMarket(market);
-        if (customerRepository.save(customer) == null)
+        if (res.getN() == 0)
             return false;
-
         return true;
     }
 
     @Override
-    public boolean removeFollower(String fid, String mid) {
-        Market market = marketRepository.findOne(mid);
-        if (market == null) {
+    public boolean removeCampaign(String campaignId, String mid) {
+        if (!marketRepository.exists(mid))
             return false;
-        }
 
-        Customer customer = customerRepository.findOne(fid);
-        if (customer == null) {
+        Campaign campaign = campaignService.findOne(campaignId);
+        if (campaign == null)
             return false;
-        }
 
         WriteResult res = mongoTemplate.updateFirst(
                 new Query(where("_id").is(mid)),
-                new Update().pull("followers", fid),
+                new Update().pull("campaigns", campaign),
                 Market.class);
 
-        customer.unfollowMarket(mid);
-        if (customerRepository.save(customer) == null)
+        if (res.getN() == 0)
             return false;
-
         return true;
+    }
+
+    @Override
+    public List<Customer> getFollowers(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("followingMarkets").in(id));
+        return mongoTemplate.find(query, Customer.class);
     }
 }

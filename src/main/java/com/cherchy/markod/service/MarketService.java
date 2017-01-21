@@ -12,18 +12,17 @@ public interface MarketService {
 
     Market findOne(String id);
 
+    boolean exists(String id);
+
     Market create(Market p);
 
     Market update(Market p);
 
     void delete(String id);
 
-    boolean addCampaign(Campaign campaign, String mid);
+    boolean addCampaign(String campaignId, String mid);
 
-    boolean removeCampaign(Campaign campaign, String mid);
+    boolean removeCampaign(String campaignId, String mid);
 
-    boolean addFollower(String fid, String mid);
-
-    boolean removeFollower(String fid, String mid);
-
+    List<Customer> getFollowers(String id);
 }

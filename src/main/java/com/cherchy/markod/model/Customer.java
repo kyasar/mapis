@@ -34,7 +34,6 @@ public class Customer {
     @DBRef
     private List<Market> markets;
 
-    @DBRef
     private List<Market> followingMarkets;
 
     @DBRef
@@ -51,6 +50,7 @@ public class Customer {
         this.password = password;
         this.roles = new HashSet<String>();
         this.roles.add("ROLE_USER");
+        this.followingMarkets = new ArrayList<>();
     }
 
     public Customer(String id) {
@@ -131,15 +131,4 @@ public class Customer {
         this.campaigns = campaigns;
     }
 
-    public void followMarket(Market m) {
-        if (this.followingMarkets == null)
-            this.followingMarkets = new ArrayList<>();
-        this.followingMarkets.add(m);
-    }
-
-    public void unfollowMarket(String mid) {
-        if (this.followingMarkets == null)
-            return;
-        this.followingMarkets.removeIf(id -> id.equals(mid));
-    }
 }

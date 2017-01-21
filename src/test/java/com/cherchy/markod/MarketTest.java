@@ -44,7 +44,7 @@ public class MarketTest {
     @Autowired
     private CustomerService customerService;
 
-    /*
+
     @Test
     public void t0_setUp() {
         mongoTemplate.remove(new Query(), "markets");
@@ -70,7 +70,7 @@ public class MarketTest {
             }
         }
     }
-    */
+
     static String marketId;
 
     @Test
@@ -84,16 +84,26 @@ public class MarketTest {
     }
 
     @Test
-    public void t3_updateMarket() {
-        Customer customer = customerService.findOne("58827691da804429e444a0ff");
-        System.out.println("Customer id: " + customer.getId() + " going to follow market id: " + marketId);
+    public void t3_createCampaign() {
 
-        Assert.assertEquals(true, marketService.addFollower(customer.getId(), marketId));
+        Campaign c1 = campaignService.findAll().get(0);
+        Campaign c2 = campaignService.findAll().get(1);
+        Assert.assertNotEquals(null, c1);
+        Assert.assertNotEquals(null, c2);
 
-        for (String fid : marketService.findOne(marketId).getFollowers()) {
-            System.out.println("Follower id: " + fid);
-        }
-        System.out.println("Removing Follower id: " + customer.getId());
-        Assert.assertEquals(true, marketService.removeFollower(customer.getId(), marketId));
+        Assert.assertEquals(true, marketService.addCampaign(c1.getId(), marketId));
+        Assert.assertEquals(true, marketService.addCampaign(c2.getId(), marketId));
+    }
+
+    @Test
+    public void t4_removeCampaign() {
+        Campaign c1 = campaignService.findAll().get(0);
+        System.out.println("Removing campaign id: " + c1.getId());
+
+        Assert.assertEquals(false, marketService.removeCampaign(c1.getId(), "wrongId"));
+        Assert.assertEquals(false, marketService.removeCampaign(c1.getId() + "a", marketId));
+        Assert.assertEquals(2, marketService.findOne(marketId).getCampaigns().size());
+        Assert.assertEquals(true, marketService.removeCampaign(c1.getId(), marketId));
+        Assert.assertEquals(1, marketService.findOne(marketId).getCampaigns().size());
     }
 }

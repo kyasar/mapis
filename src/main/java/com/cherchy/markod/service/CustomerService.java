@@ -12,10 +12,16 @@ public interface CustomerService {
 
     Customer findOne(String id);
 
+    boolean exists(String id);
+
     Customer create(Customer p);
 
     Customer update(Customer p);
 
     void delete(String id);
+
+    boolean followMarket(String cid, String mid);
+
+    boolean unfollowMarket(String cid, String mid);
 
 }

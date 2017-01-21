@@ -30,9 +30,6 @@ public class Market {
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private Point location;
 
-    // list of ids of follower customers
-    private List<String> followers = new ArrayList<>();
-
     @DBRef
     private List<Campaign> campaigns = new ArrayList<>();
 
@@ -88,14 +85,6 @@ public class Market {
         this.location = location;
     }
 
-    public List<String> getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(List<String> followers) {
-        this.followers = followers;
-    }
-
     public List<Campaign> getCampaigns() {
         return campaigns;
     }
@@ -104,15 +93,4 @@ public class Market {
         this.campaigns = campaigns;
     }
 
-    public void addToFollowers(String cid) {
-        if (this.followers == null)
-            this.followers = new ArrayList<>();
-        this.followers.add(cid);
-    }
-
-    public void removeFromFollowers(String cid) {
-        if (this.followers == null)
-            return;
-        this.followers.removeIf(id -> id.equals(cid));
-    }
 }
