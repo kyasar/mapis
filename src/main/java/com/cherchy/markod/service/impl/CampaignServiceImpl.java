@@ -1,17 +1,23 @@
 package com.cherchy.markod.service.impl;
 
 import com.cherchy.markod.model.Campaign;
+import com.cherchy.markod.model.Market;
 import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.CampaignRepository;
 import com.cherchy.markod.repository.ProductRepository;
 import com.cherchy.markod.service.CampaignService;
+import com.mongodb.BasicDBObject;
+import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Service
 public class CampaignServiceImpl implements CampaignService {
@@ -21,6 +27,9 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Override
     public List<Campaign> findAll() {
@@ -63,15 +72,19 @@ public class CampaignServiceImpl implements CampaignService {
         Product p = productRepository.findOne(product.getId());
         if (p == null)
             return false;
+
         Campaign campaign = campaignRepository.findOne(cid);
         if (campaign == null)
             return false;
-        campaign.getProducts().add(new Product(product.getId(), product.getPrice()));
 
-        if (campaignRepository.save(campaign) == null)
+        WriteResult res = mongoTemplate.updateFirst(
+                new Query(where("_id").is(cid)),
+                new Update().addToSet("products", new Product(product.getId(), product.getPrice())),
+                Campaign.class);
+
+        if (res.getN() == 0)
             return false;
-        else
-            return true;
+        return true;
     }
 
     @Override
@@ -79,14 +92,19 @@ public class CampaignServiceImpl implements CampaignService {
         Product product = productRepository.findOne(pid);
         if (product == null)
             return false;
+
         Campaign campaign = campaignRepository.findOne(cid);
         if (campaign == null)
             return false;
-        campaign.getProducts().removeIf(p -> p.getId().equals(product.getId()));
 
-        if (campaignRepository.save(campaign) == null)
+        System.out.println("Removing product: " + product.getId());
+        WriteResult res = mongoTemplate.updateFirst(
+                new Query(where("_id").is(cid)),
+                new Update().pull("products", new BasicDBObject("_id", product.getId())),
+                Campaign.class);
+
+        if (res.getN() == 0)
             return false;
-        else
-            return true;
+        return true;
     }
 }

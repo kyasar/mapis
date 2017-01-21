@@ -84,17 +84,28 @@ public class CampaignTest {
         }
     }
 
-    /*
+
     @Test
     public void t3_updateCampaign() {
         Product product = productRepository.findByNameContaining("run2").get(0);
-        Assert.assertEquals(true, campaignService.removeProduct(product.getId(), campaignId));
-        Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9, 99)), campaignId));
-        System.out.println("Products in campaign:");
         Campaign c = campaignService.findOne(campaignId);
+
+        Assert.assertEquals(2, c.getProducts().size());
+        Assert.assertEquals(false, campaignService.removeProduct(product.getId() + "x", campaignId + "x"));
+        Assert.assertEquals(false, campaignService.removeProduct(product.getId() + "x", campaignId));
+        Assert.assertEquals(false, campaignService.removeProduct(product.getId(), campaignId + "x"));
+        Assert.assertEquals(true, campaignService.removeProduct(product.getId(), campaignId));
+
+        c = campaignService.findOne(campaignId);
+        Assert.assertEquals(1, c.getProducts().size());
+        Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9, 99)), campaignId));
+        c = campaignService.findOne(campaignId);
+        Assert.assertEquals(2, c.getProducts().size());
+
+        System.out.println("Products in campaign " + c.getTitle() + ":");
         for (Product p : c.getProducts()) {
             System.out.println(p.getId() + " " + p.getPrice().toString());
         }
     }
-    */
+
 }
