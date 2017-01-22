@@ -99,6 +99,7 @@ public class CampaignTest {
         c = campaignService.findOne(campaignId);
         Assert.assertEquals(1, c.getProducts().size());
         Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9, 99)), campaignId));
+        Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(19, 99)), campaignId));
         c = campaignService.findOne(campaignId);
         Assert.assertEquals(2, c.getProducts().size());
 

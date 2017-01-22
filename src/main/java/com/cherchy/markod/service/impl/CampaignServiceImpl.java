@@ -78,13 +78,24 @@ public class CampaignServiceImpl implements CampaignService {
         if (campaign == null)
             return false;
 
+        if (campaign.getProducts().contains(product)) {
+            Product productExisted = campaign.getProducts().get(campaign.getProducts().indexOf(product));
+            productExisted.setPrice(product.getPrice());
+        }
+        else {
+            campaign.getProducts().add(new Product(p.getId(), product.getPrice()));
+        }
+
+        campaignRepository.save(campaign);
+        /*
         WriteResult res = mongoTemplate.updateFirst(
                 new Query(where("_id").is(cid)),
                 new Update().addToSet("products", new Product(product.getId(), product.getPrice())),
                 Campaign.class);
-
         if (res.getN() == 0)
             return false;
+        */
+
         return true;
     }
 

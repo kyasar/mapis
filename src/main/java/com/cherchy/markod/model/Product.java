@@ -68,4 +68,13 @@ public class Product {
     public void setPrice(Price price) {
         this.price = price;
     }
+
+    @Override
+    public boolean equals(Object p) {
+
+        if (this.getId().equals(((Product) p).getId()))
+            return true;
+        else
+            return false;
+    }
 }
