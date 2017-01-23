@@ -114,11 +114,6 @@ public class CampaignTest {
         Assert.assertEquals(true, c.isActive());
         c = campaignService.activate(c.getId());
         Assert.assertEquals(false, c.isActive());
-
-        System.out.println("Products in campaign " + c.getTitle() + ":");
-        for (Product p : c.getProducts()) {
-            System.out.println(p.getId() + " " + p.getPrice().toString());
-        }
     }
 
     @Test
