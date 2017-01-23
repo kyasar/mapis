@@ -19,6 +19,8 @@ public interface CampaignService {
 
     void delete(String id);
 
+    Campaign activate(String id);
+
     boolean addProduct(Product product, String cid);
 
     boolean removeProduct(String pid, String cid);

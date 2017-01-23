@@ -55,23 +55,28 @@ public class CampaignTest {
     public void t2_createCampaign() throws ParseException {
 
         List<Product> products = productRepository.findByNameContaining("run");
-        List<Product> campaignProducts = new ArrayList<>();
+        Assert.assertEquals(3, products.size());
 
-        int  i =0;
-        for (Product p : products) {
-            campaignProducts.add(new Product(p.getId(), new Price(10 + (i++), 5)));
-        }
-
-        Campaign c1 = new Campaign("Campaign1", sdf.parse("10/01/2017"), sdf.parse("14/01/2017"), campaignProducts);
-        campaignService.create(c1);
-        campaignId = c1.getId();
-        System.out.println("Campaign created: " + campaignId + " " + campaignProducts.size());
-
-        campaignProducts.removeIf(e -> e.getPrice().getLeft() == 10);
-        c1 = new Campaign("Campaign2", sdf.parse("12/01/2017"), sdf.parse("17/01/2017"), campaignProducts);
+        Campaign c1 = new Campaign("Campaign1", sdf.parse("10/01/2017"), sdf.parse("14/01/2017"));
         campaignService.create(c1);
         campaignId = c1.getId();
         System.out.println("Campaign created: " + campaignId);
+
+        int  i =0;
+        for (Product product : products) {
+            Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9 + i++, 99)), campaignId));
+        }
+
+        products.removeIf(e -> e.getName().endsWith("run2"));
+        c1 = new Campaign("Campaign2", sdf.parse("12/01/2017"), sdf.parse("17/01/2017"));
+        campaignService.create(c1);
+        campaignId = c1.getId();
+        System.out.println("Campaign created: " + campaignId);
+
+        i = 10;
+        for (Product product : products) {
+            Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9 + i, 99)), campaignId));
+        }
     }
 
     @Test
@@ -81,13 +86,14 @@ public class CampaignTest {
         System.out.println("Products in campaign:");
         for (Product p : c.getProducts()) {
             System.out.println(p.getId() + " " + p.getPrice().toString());
+            Assert.assertEquals(false, c.isActive());
         }
     }
 
 
     @Test
-    public void t3_updateCampaign() {
-        Product product = productRepository.findByNameContaining("run2").get(0);
+    public void t3_updateCampaign() throws ParseException {
+        Product product = productRepository.findByNameContaining("run3").get(0);
         Campaign c = campaignService.findOne(campaignId);
 
         Assert.assertEquals(2, c.getProducts().size());
@@ -102,6 +108,12 @@ public class CampaignTest {
         Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(19, 99)), campaignId));
         c = campaignService.findOne(campaignId);
         Assert.assertEquals(2, c.getProducts().size());
+
+        Assert.assertEquals(false, c.isActive());
+        c = campaignService.activate(c.getId());
+        Assert.assertEquals(true, c.isActive());
+        c = campaignService.activate(c.getId());
+        Assert.assertEquals(false, c.isActive());
 
         System.out.println("Products in campaign " + c.getTitle() + ":");
         for (Product p : c.getProducts()) {

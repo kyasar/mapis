@@ -29,13 +29,13 @@ public class Campaign {
     private Date endDate;
 
     //@DBRef(lazy =  -> ref is not a solution relation contains price
-    private List<Product> products = new ArrayList<>();
+    private List<Product> products;
 
-    public Campaign(String title, Date startDate, Date endDate, List<Product> products) {
+    public Campaign(String title, Date startDate, Date endDate) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.products = products;
+        this.products = new ArrayList<>();
     }
 
     public String getId() {
