@@ -81,6 +81,10 @@ public class MarketTest {
             System.out.println(m.getId() + " " + m.getName());
             marketId = m.getId();
         }
+
+        Assert.assertEquals(false, marketService.findOne(marketId).isActive());
+        marketService.activate(marketId, true);
+        Assert.assertEquals(true, marketService.findOne(marketId).isActive());
     }
 
     @Test

@@ -19,7 +19,7 @@ public interface CampaignService {
 
     void delete(String id);
 
-    Campaign activate(String id);
+    Campaign activate(String id, boolean state);
 
     boolean addProduct(Product product, String cid);
 

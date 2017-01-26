@@ -69,12 +69,11 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public Campaign activate(String id) {
+    public Campaign activate(String id, boolean state) {
         Campaign campaign = campaignRepository.findOne(id);
         if (campaign == null)
             return null;
-        // toggle activation
-        campaign.setActive(!campaign.isActive());
+        campaign.setActive(state);
         return campaignRepository.save(campaign);
     }
 

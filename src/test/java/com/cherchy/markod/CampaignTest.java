@@ -110,9 +110,9 @@ public class CampaignTest {
         Assert.assertEquals(2, c.getProducts().size());
 
         Assert.assertEquals(false, c.isActive());
-        c = campaignService.activate(c.getId());
+        c = campaignService.activate(c.getId(), true);
         Assert.assertEquals(true, c.isActive());
-        c = campaignService.activate(c.getId());
+        c = campaignService.activate(c.getId(), false);
         Assert.assertEquals(false, c.isActive());
     }
 

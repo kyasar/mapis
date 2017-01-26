@@ -79,6 +79,15 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
+    public Market activate(String id, boolean state) {
+        Market market = marketRepository.findOne(id);
+        if (market == null)
+            return null;
+        market.setActive(state);
+        return marketRepository.save(market);
+    }
+
+    @Override
     public boolean addCampaign(String campaignId, String mid)
     {
         if (!marketRepository.exists(mid))

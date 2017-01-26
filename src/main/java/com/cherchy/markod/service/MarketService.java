@@ -20,6 +20,8 @@ public interface MarketService {
 
     void delete(String id);
 
+    Market activate(String id, boolean state);
+
     boolean addCampaign(String campaignId, String mid);
 
     boolean removeCampaign(String campaignId, String mid);
