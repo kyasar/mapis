@@ -54,29 +54,7 @@ public class CampaignTest {
     @Test
     public void t2_createCampaign() throws ParseException {
 
-        List<Product> products = productRepository.findByNameContaining("run");
-        Assert.assertEquals(3, products.size());
 
-        Campaign c1 = new Campaign("Campaign1", sdf.parse("10/01/2017"), sdf.parse("14/01/2017"));
-        campaignService.create(c1);
-        campaignId = c1.getId();
-        System.out.println("Campaign created: " + campaignId);
-
-        int  i =0;
-        for (Product product : products) {
-            Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9 + i++, 99)), campaignId));
-        }
-
-        products.removeIf(e -> e.getName().endsWith("run2"));
-        c1 = new Campaign("Campaign2", sdf.parse("12/01/2017"), sdf.parse("17/01/2017"));
-        campaignService.create(c1);
-        campaignId = c1.getId();
-        System.out.println("Campaign created: " + campaignId);
-
-        i = 10;
-        for (Product product : products) {
-            Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9 + i, 99)), campaignId));
-        }
     }
 
     @Test

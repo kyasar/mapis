@@ -88,15 +88,8 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
-    public boolean addCampaign(String campaignId, String mid)
+    public boolean addCampaign(Campaign campaign, String mid)
     {
-        if (!marketRepository.exists(mid))
-            return false;
-
-        Campaign campaign = campaignService.findOne(campaignId);
-        if (campaign == null)
-            return false;
-
         WriteResult res = mongoTemplate.updateFirst(
                 new Query(where("_id").is(mid)),
                 new Update().addToSet("campaigns", campaign),

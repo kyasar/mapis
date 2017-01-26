@@ -11,9 +11,11 @@ public interface CampaignService {
 
     List<Campaign> findAll();
 
+    List<Campaign> findAll(String mid);
+
     Campaign findOne(String id);
 
-    Campaign create(Campaign campaign);
+    Campaign create(String mid, Campaign campaign);
 
     Campaign update(Campaign campaign);
 

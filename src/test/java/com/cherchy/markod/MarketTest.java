@@ -1,9 +1,11 @@
 package com.cherchy.markod;
 
 import com.cherchy.markod.model.*;
+import com.cherchy.markod.repository.ProductRepository;
 import com.cherchy.markod.service.CampaignService;
 import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
+import com.cherchy.markod.service.ProductService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -21,6 +23,8 @@ import org.springframework.test.annotation.SystemProfileValueSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,12 +46,15 @@ public class MarketTest {
     private CampaignService campaignService;
 
     @Autowired
-    private CustomerService customerService;
+    private ProductRepository productRepository;
 
+    private static String campaignId;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     @Test
     public void t0_setUp() {
         mongoTemplate.remove(new Query(), "markets");
+        mongoTemplate.remove(new Query(), "campaigns");
     }
 
     @Test
@@ -88,27 +95,53 @@ public class MarketTest {
     }
 
     @Test
-    public void t3_createCampaign() {
+    public void t3_createCampaign() throws ParseException {
 
-        Campaign c1 = campaignService.findAll().get(0);
-        Campaign c2 = campaignService.findAll().get(1);
-        Assert.assertNotEquals(null, c1);
-        Assert.assertNotEquals(null, c2);
+        List<Product> products = productRepository.findByNameContaining("run");
+        Assert.assertEquals(3, products.size());
 
-        Assert.assertEquals(true, marketService.addCampaign(c1.getId(), marketId));
-        Assert.assertEquals(true, marketService.addCampaign(c2.getId(), marketId));
+        Market market = marketService.findAll().get(0);
+        Assert.assertNotEquals(null, market);
+        marketId = market.getId();
+
+        Campaign c1 = new Campaign("Campaign1", sdf.parse("10/01/2017"), sdf.parse("14/01/2017"));
+        Campaign campaign1 = campaignService.create(market.getId(), c1);
+        Assert.assertNotEquals(null, campaign1);
+        Assert.assertEquals(1, marketService.getCampaigns(marketId).size());
+        System.out.println("Campaign created: " + campaign1.getId());
+        campaignId = campaign1.getId();
+
+        int  i =0;
+        for (Product product : products) {
+            Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9 + i++, 99)), campaign1.getId()));
+        }
+
+        products.removeIf(e -> e.getName().endsWith("run2"));
+        c1 = new Campaign("Campaign2", sdf.parse("12/01/2017"), sdf.parse("17/01/2017"));
+        Campaign campaign2 = campaignService.create(market.getId(), c1);
+        Assert.assertNotEquals(null, campaign2);
+        Assert.assertEquals(2, marketService.getCampaigns(marketId).size());
+        System.out.println("Campaign created: " + campaign2.getId());
+
+        i = 10;
+        for (Product product : products) {
+            Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9 + i, 99)), campaign2.getId()));
+        }
     }
+
 
     @Test
     public void t4_removeCampaign() {
-        Campaign c1 = campaignService.findAll().get(0);
-        System.out.println("Removing campaign id: " + c1.getId());
-
-        Assert.assertEquals(false, marketService.removeCampaign(c1.getId(), "wrongId"));
-        Assert.assertEquals(false, marketService.removeCampaign(c1.getId() + "a", marketId));
+        //Campaign c1 = campaignService.findAll().get(0);
+        System.out.println("Removing campaign id: " + campaignId);
+        Assert.assertEquals(2, marketService.getCampaigns(marketId).size());
+        Assert.assertEquals(false, marketService.removeCampaign(campaignId, "wrongId"));
+        Assert.assertEquals(false, marketService.removeCampaign(campaignId + "a", marketId));
         Assert.assertEquals(2, marketService.getCampaigns(marketId).size());
         Assert.assertEquals(null, marketService.getCampaigns(marketId + "1"));
-        Assert.assertEquals(true, marketService.removeCampaign(c1.getId(), marketId));
+        Assert.assertEquals(2, campaignService.findAll().size());
+        campaignService.delete(campaignId);
+        Assert.assertEquals(1, campaignService.findAll().size());
         Assert.assertEquals(1, marketService.getCampaigns(marketId).size());
     }
 }

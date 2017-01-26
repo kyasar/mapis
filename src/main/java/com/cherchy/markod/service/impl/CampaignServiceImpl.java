@@ -1,11 +1,14 @@
 package com.cherchy.markod.service.impl;
 
 import com.cherchy.markod.model.Campaign;
+import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
 import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.CampaignRepository;
+import com.cherchy.markod.repository.MarketRepository;
 import com.cherchy.markod.repository.ProductRepository;
 import com.cherchy.markod.service.CampaignService;
+import com.cherchy.markod.service.MarketService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,9 @@ public class CampaignServiceImpl implements CampaignService {
     private ProductRepository productRepository;
 
     @Autowired
+    private MarketService marketService;
+
+    @Autowired
     private MongoTemplate mongoTemplate;
 
     @Override
@@ -38,16 +44,32 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
+    public List<Campaign> findAll(String mid) {
+        return null;
+    }
+
+    @Override
     public Campaign findOne(String cid) {
         return campaignRepository.findOne(cid);
     }
 
     @Override
-    public Campaign create(Campaign campaign) {
+    public Campaign create(String mid, Campaign campaign) {
+        Market market = marketService.findOne(mid);
+        if (market == null)
+            return null;
         if (campaign.getId() != null) {
             return null;
         }
-        return campaignRepository.save(campaign);
+
+        Campaign created = campaignRepository.save(campaign);
+        if (created == null)
+            return null;
+
+        if (marketService.addCampaign(created, mid))
+            return campaign;
+        else
+            return null;
     }
 
     @Override
@@ -64,7 +86,15 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(String id)
+    {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("campaigns").in(id));
+        Market market = mongoTemplate.findOne(query, Market.class);
+
+        if (market != null) {
+            marketService.removeCampaign(id, market.getId());
+        }
         campaignRepository.delete(id);
     }
 

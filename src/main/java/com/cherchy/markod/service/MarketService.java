@@ -22,7 +22,7 @@ public interface MarketService {
 
     Market activate(String id, boolean state);
 
-    boolean addCampaign(String campaignId, String mid);
+    boolean addCampaign(Campaign campaign, String mid);
 
     boolean removeCampaign(String campaignId, String mid);
 
