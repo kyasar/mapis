@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -32,6 +33,9 @@ public class MarketServiceImpl implements MarketService {
 
     @Autowired
     private CampaignService campaignService;
+
+    @Autowired
+    private CustomerService customerService;
 
     @Override
     public List<Market> findAll() {
@@ -53,11 +57,34 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
-    public Market create(Market m) {
-        if (m.getId() != null) {
+    public Market create(Market market) {
+        if (market.getId() != null) {
             return null;
         }
-        return marketRepository.save(m);
+        return marketRepository.save(market);
+    }
+
+    @Override
+    public Market create(String cid, Market market) {
+        Customer customer = customerService.findOne(cid);
+        if (customer == null)
+            return null;
+        if (market.getId() != null) {
+            return null;
+        }
+
+        Market created = marketRepository.save(market);
+        if (created == null)
+            return null;
+
+        if (customer.getMarkets() == null) {
+            customer.setMarkets(new HashSet<Market>());
+        }
+        customer.getMarkets().add(market);
+
+        customerService.update(customer);
+
+        return created;
     }
 
     @Override

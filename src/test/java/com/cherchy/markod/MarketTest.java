@@ -48,6 +48,9 @@ public class MarketTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private CustomerService customerService;
+
     private static String campaignId;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -55,10 +58,23 @@ public class MarketTest {
     public void t0_setUp() {
         mongoTemplate.remove(new Query(), "markets");
         mongoTemplate.remove(new Query(), "campaigns");
+        mongoTemplate.remove(new Query(), "customers");
+
+
+        Customer c1 = new Customer("Kadir", "Yasar", "ayasar@gmail.com", "12345");
+        Customer c2 = new Customer("Kadir2", "Yasar", "yasar@gmail.com", "111");
+        Customer c3 = new Customer("Kadir", "Yasar", "kadir.mail@gmail.com", "112233");
+
+        Assert.assertNotEquals(null, customerService.create(c1).getId());
+        Assert.assertNotEquals(null, customerService.create(c2));
+        Assert.assertNotEquals(null, customerService.create(c3).getId());
     }
 
     @Test
     public void t1_insertMarkets() {
+
+        Customer customer = customerService.findAll().get(0);
+        System.out.println(customer.getId() + " " + customer.getName());
 
         List<Market> markets = Arrays.asList(
             new Market("Altunbilekler", "address 1", new Point(39.894177, 32.801571)),
@@ -69,7 +85,7 @@ public class MarketTest {
         );
 
         for (Market m : markets) {
-            Market created = marketService.create(m);
+            Market created = marketService.create(customer.getId(), m);
             if (created != null) {
                 System.out.println("Market created: " + created.getId());
             } else {

@@ -32,7 +32,7 @@ public class Customer {
     private Set<String> roles;
 
     @DBRef
-    private List<Market> markets;
+    private Set<Market> markets;
 
     private List<Market> followingMarkets;
 
@@ -107,11 +107,11 @@ public class Customer {
         this.roles = roles;
     }
 
-    public List<Market> getMarkets() {
+    public Set<Market> getMarkets() {
         return markets;
     }
 
-    public void setMarkets(List<Market> markets) {
+    public void setMarkets(Set<Market> markets) {
         this.markets = markets;
     }
 

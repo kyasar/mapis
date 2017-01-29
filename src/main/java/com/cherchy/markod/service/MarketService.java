@@ -14,7 +14,9 @@ public interface MarketService {
 
     boolean exists(String id);
 
-    Market create(Market p);
+    Market create(Market market);
+
+    Market create(String cid, Market market);
 
     Market update(Market p);
 

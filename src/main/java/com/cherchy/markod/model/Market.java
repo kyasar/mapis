@@ -93,4 +93,8 @@ public class Market {
         this.campaigns = campaigns;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return this.getId().equals(((Market) o).getId());
+    }
 }
