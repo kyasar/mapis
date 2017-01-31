@@ -39,6 +39,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Customer findByEmail(String email) {
+        return customerRepository.findByEmail(email);
+    }
+
+    @Override
     public boolean exists(String id) {
         List<Customer> results =  mongoTemplate.find(new Query(where("_id").is(id)).limit(1), Customer.class);
         if (results.size() > 0)

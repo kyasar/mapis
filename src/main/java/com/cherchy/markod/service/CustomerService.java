@@ -12,6 +12,8 @@ public interface CustomerService {
 
     Customer findOne(String id);
 
+    Customer findByEmail(String email);
+
     boolean exists(String id);
 
     Customer create(Customer p);
