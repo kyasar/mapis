@@ -14,11 +14,22 @@ public interface MarketService {
 
     boolean exists(String id);
 
+    /*
+    Creates a standalone Market without association of a Customer
+     */
     Market create(Market market);
 
+    /*
+    Creates a Market associated with a Customer
+     */
     Market create(String cid, Market market);
 
-    Market update(Market p);
+    /*
+    Associates Market with a Customer
+     */
+    Market associate(String cid, String mid);
+
+    Market update(Market market);
 
     void delete(String id);
 

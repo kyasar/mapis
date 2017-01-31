@@ -88,6 +88,23 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
+    public Market associate(String cid, String mid) {
+        Customer customer = customerService.findOne(cid);
+        if (customer == null)
+            return null;
+        Market market = marketRepository.findOne(mid);
+        if (market == null)
+            return null;
+        if (customer.getMarkets() == null) {
+            customer.setMarkets(new HashSet<Market>());
+        }
+
+        customer.getMarkets().add(market);
+        customerService.update(customer);
+        return market;
+    }
+
+    @Override
     public Market update(Market m) {
         Market present = marketRepository.findOne(m.getId());
         if (present == null) {

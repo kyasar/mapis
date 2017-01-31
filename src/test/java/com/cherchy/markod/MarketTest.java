@@ -54,6 +54,8 @@ public class MarketTest {
     private static String campaignId;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
+    private static String marketId;
+
     @Test
     public void t0_setUp() {
         mongoTemplate.remove(new Query(), "markets");
@@ -80,8 +82,7 @@ public class MarketTest {
             new Market("Altunbilekler", "address 1", new Point(39.894177, 32.801571)),
             new Market("Migros", "address 2", new Point(39.893387, 32.79788)),
             new Market("Cagdas", "address 3", new Point(39.892827, 32.799082)),
-            new Market("Kiler", "address 4", new Point(39.895, 32.797837)),
-            new Market("Makro", "address 5", new Point(39.889732, 32.800627))
+            new Market("Kiler", "address 4", new Point(39.895, 32.797837))
         );
 
         for (Market m : markets) {
@@ -92,9 +93,23 @@ public class MarketTest {
                 System.err.println("Market NOT created: " + m.getId());
             }
         }
+
+        Market m = marketService.create(new Market("Makro", "address 5", new Point(39.889732, 32.800627)));
+        Assert.assertNotEquals(null, m);
+        marketId = m.getId();
+        System.out.println(m.getId() + " " + m.getName());
     }
 
-    static String marketId;
+    @Test
+    public void t2_associateWithACustomer()
+    {
+        Customer c = customerService.findByEmail("yasar@gmail.com");
+        Assert.assertNotEquals(null, c);
+        Market marketAssociated = marketService.associate(c.getId(), marketId);
+        Assert.assertNotEquals(null, marketAssociated);
+        Market marketAssociated2 = marketService.associate(c.getId(), marketId);
+        Assert.assertNotEquals(null, marketAssociated2);
+    }
 
     @Test
     public void t2_getMarkets() {
