@@ -17,6 +17,8 @@ public interface CampaignService {
 
     Campaign create(String mid, Campaign campaign);
 
+    Campaign create(String mid, String cid, Campaign campaign);
+
     Campaign update(Campaign campaign);
 
     void delete(String id);

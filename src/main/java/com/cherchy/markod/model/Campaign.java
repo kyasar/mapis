@@ -1,5 +1,6 @@
 package com.cherchy.markod.model;
 
+import com.cherchy.markod.model.type.CampaignType;
 import com.sun.istack.internal.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -27,6 +28,9 @@ public class Campaign {
 
     @NotNull
     private Date endDate;
+
+    @NotNull
+    private CampaignType type;
 
     //@DBRef(lazy =  -> ref is not a solution relation contains price
     private List<Product> products;
@@ -84,5 +88,29 @@ public class Campaign {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public CampaignType getType() {
+        return type;
+    }
+
+    public void setType(CampaignType type) {
+        this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Campaign campaign = (Campaign) o;
+
+        return id != null ? id.equals(campaign.id) : campaign.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

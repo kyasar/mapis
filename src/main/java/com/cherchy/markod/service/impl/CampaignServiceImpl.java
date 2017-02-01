@@ -1,13 +1,12 @@
 package com.cherchy.markod.service.impl;
 
-import com.cherchy.markod.model.Campaign;
-import com.cherchy.markod.model.Customer;
-import com.cherchy.markod.model.Market;
-import com.cherchy.markod.model.Product;
+import com.cherchy.markod.model.*;
+import com.cherchy.markod.model.type.CampaignType;
 import com.cherchy.markod.repository.CampaignRepository;
 import com.cherchy.markod.repository.MarketRepository;
 import com.cherchy.markod.repository.ProductRepository;
 import com.cherchy.markod.service.CampaignService;
+import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.WriteResult;
@@ -18,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +34,9 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Autowired
     private MarketService marketService;
+
+    @Autowired
+    private CustomerService customerService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -62,6 +65,7 @@ public class CampaignServiceImpl implements CampaignService {
             return null;
         }
 
+        campaign.setType(CampaignType.PRIVATE);
         Campaign created = campaignRepository.save(campaign);
         if (created == null)
             return null;
@@ -70,6 +74,31 @@ public class CampaignServiceImpl implements CampaignService {
             return campaign;
         else
             return null;
+    }
+
+    @Override
+    public Campaign create(String mid, String cid, Campaign campaign) {
+        Market market = marketService.findOne(mid);
+        if (market == null)
+            return null;
+        Customer customer = customerService.findOne(cid);
+        if (customer == null)
+            return null;
+
+        campaign.setType(CampaignType.PUBLIC);
+        Campaign created = campaignRepository.save(campaign);
+        if (created == null)
+            return null;
+
+        if (marketService.addCampaign(created, mid)) {
+            if (customer.getCampaigns() == null)
+                customer.setCampaigns(new ArrayList<>());
+            customer.getCampaigns().add(campaign);
+            customerService.update(customer);
+
+            return created;
+        }
+        return null;
     }
 
     @Override

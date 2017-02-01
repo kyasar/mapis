@@ -112,8 +112,6 @@ public class MarketServiceImpl implements MarketService {
             return null;
         }
 
-        m.setCampaigns(present.getCampaigns());
-
         return marketRepository.save(m);
     }
 
