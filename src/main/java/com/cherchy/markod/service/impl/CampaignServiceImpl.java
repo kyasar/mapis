@@ -112,8 +112,8 @@ public class CampaignServiceImpl implements CampaignService {
     public boolean delete(String id)
     {
         Query query = new Query();
-        query.addCriteria(Criteria.where("name").is("ant"));
-        Campaign removed = mongoTemplate.findById(id, Campaign.class);
+        query.addCriteria(Criteria.where("_id").is(id));
+        Campaign removed = mongoTemplate.findAndRemove(query, Campaign.class);
         if (removed == null)
             return false;
         return true;
