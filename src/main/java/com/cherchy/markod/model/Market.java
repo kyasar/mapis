@@ -30,9 +30,6 @@ public class Market {
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private Point location;
 
-    @DBRef
-    private List<Campaign> campaigns = new ArrayList<>();
-
     public Market(String name, String address, Point location) {
         this.name = name;
         this.address = address;
@@ -83,14 +80,6 @@ public class Market {
 
     public void setLocation(Point location) {
         this.location = location;
-    }
-
-    public List<Campaign> getCampaigns() {
-        return campaigns;
-    }
-
-    public void setCampaigns(List<Campaign> campaigns) {
-        this.campaigns = campaigns;
     }
 
     @Override

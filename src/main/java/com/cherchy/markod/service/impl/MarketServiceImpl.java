@@ -130,50 +130,9 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
-    public boolean addCampaign(Campaign campaign, String mid)
-    {
-        WriteResult res = mongoTemplate.updateFirst(
-                new Query(where("_id").is(mid)),
-                new Update().addToSet("campaigns", campaign),
-                Market.class);
-
-        if (res.getN() == 0)
-            return false;
-        return true;
-    }
-
-    @Override
-    public boolean removeCampaign(String campaignId, String mid) {
-        if (!marketRepository.exists(mid))
-            return false;
-
-        Campaign campaign = campaignService.findOne(campaignId);
-        if (campaign == null)
-            return false;
-
-        WriteResult res = mongoTemplate.updateFirst(
-                new Query(where("_id").is(mid)),
-                new Update().pull("campaigns", campaign),
-                Market.class);
-
-        if (res.getN() == 0)
-            return false;
-        return true;
-    }
-
-    @Override
     public List<Customer> getFollowers(String id) {
         Query query = new Query();
         query.addCriteria(Criteria.where("followingMarkets").in(id));
         return mongoTemplate.find(query, Customer.class);
-    }
-
-    @Override
-    public List<Campaign> getCampaigns(String id) {
-        Market market = marketRepository.findOne(id);
-        if (market != null) {
-            return market.getCampaigns();
-        }
-        return null;
     }
 }

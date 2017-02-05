@@ -35,11 +35,6 @@ public interface MarketService {
 
     Market activate(String id, boolean state);
 
-    boolean addCampaign(Campaign campaign, String mid);
-
-    boolean removeCampaign(String campaignId, String mid);
-
     List<Customer> getFollowers(String id);
 
-    List<Campaign> getCampaigns(String id);
 }

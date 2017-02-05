@@ -38,9 +38,6 @@ public class Customer {
 
     private List<Market> followingMarkets;
 
-    @DBRef
-    private List<Campaign> campaigns;
-
     public Customer(
             String name,
             String surname,
@@ -132,14 +129,6 @@ public class Customer {
 
     public void setFollowingMarkets(List<Market> followingMarkets) {
         this.followingMarkets = followingMarkets;
-    }
-
-    public List<Campaign> getCampaigns() {
-        return campaigns;
-    }
-
-    public void setCampaigns(List<Campaign> campaigns) {
-        this.campaigns = campaigns;
     }
 
 }
