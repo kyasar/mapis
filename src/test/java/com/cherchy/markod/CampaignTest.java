@@ -70,8 +70,6 @@ public class CampaignTest {
         Customer customer = customerService.findByEmail("kadir.mail@gmail.com");
         Assert.assertNotEquals(null, market);
         Assert.assertNotEquals(null, customer);
-        market.getCampaigns().clear();
-        market = marketService.update(market);
 
         Campaign campaign = new Campaign("Campaign1", sdf.parse("10/01/2017"), sdf.parse("14/01/2017"));
 
@@ -84,7 +82,6 @@ public class CampaignTest {
         }
 
         market = marketService.findOne(market.getId());
-        Assert.assertEquals(true, market.getCampaigns().contains(campaign));
         marketId = market.getId();
         System.out.print(marketId);
     }
@@ -109,11 +106,9 @@ public class CampaignTest {
             Assert.assertEquals(true, campaignService.addProduct(new Product(product.getId(), new Price(9 + i++, 99)), campaignId));
         }
 
-        market = marketService.findOne(market.getId());
-        Assert.assertEquals(true, market.getCampaigns().contains(campaign));
-
         Assert.assertEquals(2, campaignService.findAll().size());
-        Assert.assertEquals(2, marketService.findOne(market.getId()).getCampaigns().size());
+        Assert.assertEquals(0, campaignService.findAll(market.getId() + " ").size());
+        Assert.assertEquals(2, campaignService.findAll(market.getId()).size());
     }
 
     @Test
@@ -126,7 +121,6 @@ public class CampaignTest {
             Assert.assertEquals(false, c.isActive());
         }
     }
-
 
     @Test
     public void t4_updateCampaign() throws ParseException {

@@ -35,6 +35,10 @@ public class Campaign {
     //@DBRef(lazy =  -> ref is not a solution relation contains price
     private List<Product> products;
 
+    private String customerId;
+
+    private String marketId;
+
     public Campaign(String title, Date startDate, Date endDate) {
         this.title = title;
         this.startDate = startDate;
@@ -96,6 +100,22 @@ public class Campaign {
 
     public void setType(CampaignType type) {
         this.type = type;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(String marketId) {
+        this.marketId = marketId;
     }
 
     @Override

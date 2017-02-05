@@ -48,7 +48,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public List<Campaign> findAll(String mid) {
-        return null;
+        return campaignRepository.findByMarketId(mid);
     }
 
     @Override
@@ -57,48 +57,42 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public Campaign create(String mid, Campaign campaign) {
-        Market market = marketService.findOne(mid);
-        if (market == null)
+    public Campaign create(String mid, Campaign campaign)
+    {
+        if (!marketService.exists(mid))
             return null;
-        if (campaign.getId() != null) {
-            return null;
-        }
 
+        // This campaign is officially created by Market
         campaign.setType(CampaignType.PRIVATE);
+
+        // Set relationship to market where the campaign resides
+        campaign.setMarketId(mid);
+
         Campaign created = campaignRepository.save(campaign);
         if (created == null)
             return null;
-
-        if (marketService.addCampaign(created, mid))
-            return campaign;
-        else
-            return null;
+        return created;
     }
 
     @Override
-    public Campaign create(String mid, String cid, Campaign campaign) {
-        Market market = marketService.findOne(mid);
-        if (market == null)
+    public Campaign create(String mid, String cid, Campaign campaign)
+    {
+        if (!marketService.exists(mid))
             return null;
-        Customer customer = customerService.findOne(cid);
-        if (customer == null)
+        if (!customerService.exists(cid))
             return null;
 
+        // This campaign is publicly published/announced by a user
         campaign.setType(CampaignType.PUBLIC);
+
+        // Set relationship to market where the campaign resides
+        campaign.setMarketId(mid);
+        campaign.setCustomerId(cid);
+
         Campaign created = campaignRepository.save(campaign);
         if (created == null)
             return null;
-
-        if (marketService.addCampaign(created, mid)) {
-            if (customer.getCampaigns() == null)
-                customer.setCampaigns(new ArrayList<>());
-            customer.getCampaigns().add(campaign);
-            customerService.update(customer);
-
-            return created;
-        }
-        return null;
+        return created;
     }
 
     @Override
@@ -115,16 +109,14 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public void delete(String id)
+    public boolean delete(String id)
     {
         Query query = new Query();
-        query.addCriteria(Criteria.where("campaigns").in(id));
-        Market market = mongoTemplate.findOne(query, Market.class);
-
-        if (market != null) {
-            marketService.removeCampaign(id, market.getId());
-        }
-        campaignRepository.delete(id);
+        query.addCriteria(Criteria.where("name").is("ant"));
+        Campaign removed = mongoTemplate.findById(id, Campaign.class);
+        if (removed == null)
+            return false;
+        return true;
     }
 
     @Override

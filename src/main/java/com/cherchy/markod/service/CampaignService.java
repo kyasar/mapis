@@ -21,7 +21,7 @@ public interface CampaignService {
 
     Campaign update(Campaign campaign);
 
-    void delete(String id);
+    boolean delete(String id);
 
     Campaign activate(String id, boolean state);
 

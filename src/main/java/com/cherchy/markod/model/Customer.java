@@ -28,6 +28,8 @@ public class Customer {
     @NotNull
     private String password;
 
+    private int points;
+
     @JsonIgnore
     private Set<String> roles;
 
@@ -48,6 +50,7 @@ public class Customer {
         this.surname = surname;
         this.email = email;
         this.password = password;
+        this.points = 0;
         this.roles = new HashSet<String>();
         this.roles.add("ROLE_USER");
         this.followingMarkets = new ArrayList<>();
@@ -61,6 +64,14 @@ public class Customer {
 
     public String getId() {
         return id;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     public void setId(String id) {
