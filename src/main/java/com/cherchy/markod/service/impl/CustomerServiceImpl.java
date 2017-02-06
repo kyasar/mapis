@@ -8,6 +8,7 @@ import com.cherchy.markod.service.MarketService;
 import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -107,5 +108,22 @@ public class CustomerServiceImpl implements CustomerService {
         if (res.getN() == 0)
             return false;
         return true;
+    }
+
+    @Override
+    public Customer addPoints(String cid, int points)
+    {
+        Query query = new Query(Criteria.where("_id").is(cid));
+        Update update = new Update();
+        update.inc("points", points);
+        return mongoTemplate.findAndModify(query, update, Customer.class);
+    }
+
+    @Override
+    public Customer deletePoints(String cid, int points) {
+        Query query = new Query(Criteria.where("_id").is(cid));
+        Update update = new Update();
+        update.inc("points", -points);
+        return mongoTemplate.findAndModify(query, update, Customer.class);
     }
 }

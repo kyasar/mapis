@@ -11,6 +11,7 @@ import com.cherchy.markod.service.MarketService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -41,6 +42,9 @@ public class CampaignServiceImpl implements CampaignService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    //@Value("app.markod.points.campaign")
+    private int POINTS_PUBLIC_CAMPAIGN = 5;
+
     @Override
     public List<Campaign> findAll() {
         return campaignRepository.findAll();
@@ -67,6 +71,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         // Set relationship to market where the campaign resides
         campaign.setMarketId(mid);
+        campaign.setActive(true);   // already approved
 
         Campaign created = campaignRepository.save(campaign);
         if (created == null)
@@ -124,6 +129,12 @@ public class CampaignServiceImpl implements CampaignService {
         Campaign campaign = campaignRepository.findOne(id);
         if (campaign == null)
             return null;
+        Customer customer = customerService.findOne(campaign.getCustomerId());
+        if (customer == null)
+            return null;
+
+        customerService.addPoints(customer.getId(), POINTS_PUBLIC_CAMPAIGN);
+
         campaign.setActive(state);
         return campaignRepository.save(campaign);
     }

@@ -37,7 +37,7 @@ public class CustomerTest {
     @Autowired
     private MarketRepository marketRepository;
 
-    
+
     @Test
     public void t0_setUp() {
         mongoTemplate.remove(new Query(), "customers");
