@@ -12,6 +12,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,6 +26,7 @@ import java.util.List;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Service
+@PropertySource("classpath:markod.properties")
 public class CampaignServiceImpl implements CampaignService {
 
     @Autowired
@@ -42,8 +44,8 @@ public class CampaignServiceImpl implements CampaignService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    //@Value("app.markod.points.campaign")
-    private int POINTS_PUBLIC_CAMPAIGN = 5;
+    @Value("${points.public.campaign}")
+    private int POINTS_PUBLIC_CAMPAIGN;
 
     @Override
     public List<Campaign> findAll() {
