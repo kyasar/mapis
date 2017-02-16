@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection="products")
@@ -22,6 +23,9 @@ public class Product {
     @NotNull
     @Indexed
     private String barcode;
+
+    @DBRef
+    private Category category;
 
     public Product() {
     }
