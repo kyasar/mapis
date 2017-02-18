@@ -24,8 +24,8 @@ public class Product {
     @Indexed
     private String barcode;
 
-    @DBRef
-    private Category category;
+    @NotNull
+    private String categoryId;
 
     public Product() {
     }
@@ -36,10 +36,10 @@ public class Product {
         this.price = price;
     }
 
-    public Product(String name, String barcode, Category category) {
+    public Product(String name, String barcode, String categoryId) {
         this.name = name;
         this.barcode = barcode;
-        this.category = category;
+        this.categoryId = categoryId;
     }
 
     public String getId() {
@@ -74,12 +74,12 @@ public class Product {
         this.price = price;
     }
 
-    public Category getCategory() {
-        return category;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
     @Override

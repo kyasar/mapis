@@ -1,8 +1,11 @@
 package com.cherchy.markod;
 
+import com.cherchy.markod.model.Category;
 import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.ProductRepository;
+import com.cherchy.markod.service.CategoryService;
 import com.cherchy.markod.service.ProductService;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,9 +37,39 @@ public class ProductTest {
 	@Autowired
 	private ProductService productService;
 
-	@Before
-	public void setUp() {
+	@Autowired
+	private CategoryService categoryService;
+
+	@Test
+	public void t0_setUp() {
 		mongoTemplate.remove(new Query(), "products");
+        mongoTemplate.remove(new Query(), "categories");
+		Category c1 = categoryService.create(new Category("Meyve", null));
+		Assert.assertNotNull(c1);
+		Assert.assertNotNull(categoryService.create(new Category("Armut", c1.getId())));
+		Assert.assertNotNull(categoryService.create(new Category("Elma", c1.getId())));
+		Assert.assertNotNull(categoryService.create(new Category("Muz", c1.getId())));
 	}
 
+	@Test
+    public void t1_addProducts() {
+		Category category = categoryService.findOne("Armut");
+		Assert.assertNotNull(category);
+
+		productService.create(new Product("Deveci Armut", "91222", category.getId()));
+        productService.create(new Product("Antalya Armut", "91223", category.getId()));
+        productService.create(new Product("Deveci Armut", "91224", category.getId()));
+
+        Assert.assertEquals(3, productService.findAll().size());
+	}
+
+	@Test
+    public void t2_findByCategory() {
+        Category category = categoryService.findOne("Armut");
+        Assert.assertNotNull(category);
+
+        List<Product> armuts = productService.findAll(category);
+        Assert.assertNotNull(armuts);
+        Assert.assertEquals(3, armuts.size());
+    }
 }
