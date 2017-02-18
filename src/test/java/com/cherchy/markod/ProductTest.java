@@ -60,16 +60,21 @@ public class ProductTest {
         productService.create(new Product("Antalya Armut", "91223", category.getId()));
         productService.create(new Product("Deveci Armut", "91224", category.getId()));
 
-        Assert.assertEquals(3, productService.findAll().size());
+        category = categoryService.findOne("Elma");
+        Assert.assertNotNull(category);
+        productService.create(new Product("StarKing Elma", "78001", category.getId()));
+        productService.create(new Product("GreenSmith Elma", "78001", category.getId()));
+
+        Assert.assertEquals(5, productService.findAll().size());
 	}
 
 	@Test
     public void t2_findByCategory() {
-        Category category = categoryService.findOne("Armut");
+        Category category = categoryService.findOne("Meyve");
         Assert.assertNotNull(category);
 
         List<Product> armuts = productService.findAll(category);
         Assert.assertNotNull(armuts);
-        Assert.assertEquals(3, armuts.size());
+        Assert.assertEquals(5, armuts.size());
     }
 }

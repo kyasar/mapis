@@ -40,10 +40,11 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> findAll(Category category) {
         List<Product> products = new ArrayList<>();
 
-        Query query = new Query();
-        query.addCriteria(Criteria.where("categoryId").is(category.getId()));
-        products.addAll(mongoTemplate.find(query, Product.class));
-
+        for (Category cat : categoryService.findAll(category.getId())) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("categoryId").is(cat.getId()));
+            products.addAll(mongoTemplate.find(query, Product.class));
+        }
         return products;
     }
 
