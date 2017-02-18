@@ -36,9 +36,10 @@ public class Product {
         this.price = price;
     }
 
-    public Product(String name, String barcode) {
+    public Product(String name, String barcode, Category category) {
         this.name = name;
         this.barcode = barcode;
+        this.category = category;
     }
 
     public String getId() {
@@ -73,9 +74,16 @@ public class Product {
         this.price = price;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     @Override
     public boolean equals(Object p) {
-
         if (this.getId().equals(((Product) p).getId()))
             return true;
         else

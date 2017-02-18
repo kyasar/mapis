@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Set;
 
-@Document(collection="category")
+@Document(collection="categories")
 public class Category {
 
     @Id
@@ -16,15 +16,14 @@ public class Category {
     @NotNull
     private String name;
 
-    @DBRef
-    private Category parentCategory;
+    private String parentCategoryId;
 
     public Category() {
     }
 
-    public Category(String name, Category parentCategory) {
+    public Category(String name, String parentCategoryId) {
         this.name = name;
-        this.parentCategory = parentCategory;
+        this.parentCategoryId = parentCategoryId;
     }
 
     public String getId() {
@@ -43,12 +42,12 @@ public class Category {
         this.name = name;
     }
 
-    public Category getParentCategory() {
-        return parentCategory;
+    public String getParentCategoryId() {
+        return parentCategoryId;
     }
 
-    public void setParentCategory(Category parentCategory) {
-        this.parentCategory = parentCategory;
+    public void setParentCategoryId(String parentCategoryId) {
+        this.parentCategoryId = parentCategoryId;
     }
 
     @Override

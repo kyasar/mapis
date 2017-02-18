@@ -13,8 +13,9 @@ public interface CategoryService {
 
     List<Category> findAll(String parentCategoryId);
 
-    Category create(Category category, String parentCategoryId);
+    Category findOne(String name);
+
+    Category create(Category category);
 
     void delete(String id);
-
 }

@@ -5,6 +5,7 @@ import com.cherchy.markod.repository.ProductRepository;
 import com.cherchy.markod.service.ProductService;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,19 +34,9 @@ public class ProductTest {
 	@Autowired
 	private ProductService productService;
 
-	@Test
-	public void t0_setUp() {
+	@Before
+	public void setUp() {
 		mongoTemplate.remove(new Query(), "products");
 	}
 
-	@Test
-	public void t1_insertProduct() {
-		Product p1 = new Product("Urun1", "12341");
-		Product p2 = new Product("Urun2", "12342");
-		Product p3 = new Product("Urun3", "12343");
-
-		productService.create(p1).getId();
-		productService.create(p2).getId();
-		productService.create(p3).getId();
-	}
 }
