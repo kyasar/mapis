@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 import java.net.UnknownHostException;
 
@@ -41,5 +42,10 @@ public class MongoDBConfig {
         return new MongoTemplate(mongoDbFactory(), converter);
         */
         return new MongoTemplate(mongoDbFactory());
+    }
+
+    @Bean
+    public GridFsTemplate gridFsTemplate() throws Exception {
+        return new GridFsTemplate(mongoDbFactory(), new MappingMongoConverter(mongoDbFactory(), new MongoMappingContext()));
     }
 }
