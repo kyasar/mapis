@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findAll(String name) {
-        return null;
+        return productRepository.findByNameContaining(name);
     }
 
     @Override

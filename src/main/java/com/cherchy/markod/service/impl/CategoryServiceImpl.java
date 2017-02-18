@@ -70,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category findOne(String name) {
-        return categoryRepository.findByName(name);
+        return categoryRepository.findByNameIgnoreCase(name);
     }
 
     @Override

@@ -49,7 +49,7 @@ public class CategoryTest {
         Category c3 = categoryService.create(new Category("Cikolata", null));
         Assert.assertNotNull(c3);
 
-        Category c4 = categoryService.create(new Category("Armut", c1.getId()));
+        Category c4 = categoryService.create(new Category("armut", c1.getId()));
         Assert.assertNotNull(c4);
         Category c5 = categoryService.create(new Category("Deveci", c4.getId()));
         Assert.assertNotNull(c5);
