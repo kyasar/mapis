@@ -36,7 +36,7 @@ public class Customer {
     @DBRef
     private Set<Market> markets;
 
-    private List<Market> followingMarkets;
+    private Set<Market> followingMarkets;
 
     public Customer(
             String name,
@@ -50,7 +50,7 @@ public class Customer {
         this.points = 0;
         this.roles = new HashSet<String>();
         this.roles.add("ROLE_USER");
-        this.followingMarkets = new ArrayList<>();
+        this.followingMarkets = new HashSet<>();
     }
 
     public Customer(String id) {
@@ -123,11 +123,11 @@ public class Customer {
         this.markets = markets;
     }
 
-    public List<Market> getFollowingMarkets() {
+    public Set<Market> getFollowingMarkets() {
         return followingMarkets;
     }
 
-    public void setFollowingMarkets(List<Market> followingMarkets) {
+    public void setFollowingMarkets(Set<Market> followingMarkets) {
         this.followingMarkets = followingMarkets;
     }
 

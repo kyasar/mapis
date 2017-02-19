@@ -2,13 +2,12 @@ package com.cherchy.markod;
 
 import com.cherchy.markod.model.*;
 import com.cherchy.markod.repository.ProductRepository;
-import com.cherchy.markod.service.CampaignService;
-import com.cherchy.markod.service.CustomerService;
-import com.cherchy.markod.service.MarketService;
-import com.cherchy.markod.service.ProductService;
+import com.cherchy.markod.service.*;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,10 +45,13 @@ public class MarketTest {
     private CampaignService campaignService;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     private static String campaignId;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -61,7 +63,7 @@ public class MarketTest {
         mongoTemplate.remove(new Query(), "markets");
         mongoTemplate.remove(new Query(), "campaigns");
         mongoTemplate.remove(new Query(), "customers");
-
+        mongoTemplate.remove(new Query(), "products");
 
         Customer c1 = new Customer("Kadir", "Yasar", "ayasar@gmail.com", "12345");
         Customer c2 = new Customer("Kadir2", "Yasar", "yasar@gmail.com", "111");
@@ -70,12 +72,22 @@ public class MarketTest {
         Assert.assertNotEquals(null, customerService.create(c1).getId());
         Assert.assertNotEquals(null, customerService.create(c2));
         Assert.assertNotEquals(null, customerService.create(c3).getId());
+
+        Category category1 = categoryService.create(new Category("Category-1", null));
+        Assert.assertNotNull(category1);
+
+        productService.create(new Product("Urun1", "2222", category1.getId()));
+        productService.create(new Product("Urun2", "3333", category1.getId()));
+        productService.create(new Product("Urun3", "4444", category1.getId()));
+
+        Assert.assertEquals(3, productService.findAll().size());
     }
 
     @Test
     public void t1_insertMarkets() {
 
-        Customer customer = customerService.findAll().get(0);
+        Customer customer = customerService.findByEmail("ayasar@gmail.com");
+        Assert.assertNotNull(customer);
         System.out.println(customer.getId() + " " + customer.getName());
 
         List<Market> markets = Arrays.asList(
@@ -94,17 +106,17 @@ public class MarketTest {
             }
         }
 
-        Market m = marketService.create(new Market("Makro", "address 5", new Point(39.889732, 32.800627)));
-        Assert.assertNotEquals(null, m);
-        marketId = m.getId();
-        System.out.println(m.getId() + " " + m.getName());
+        Market market = marketService.create(new Market("Makro", "address 5", new Point(39.889732, 32.800627)));
+        Assert.assertNotNull(market);
+        marketId = market.getId();
+        System.out.println(market.getId() + " " + market.getName());
     }
 
     @Test
     public void t2_associateWithACustomer()
     {
         Customer c = customerService.findByEmail("yasar@gmail.com");
-        Assert.assertNotEquals(null, c);
+        Assert.assertNotNull(c);
         Market marketAssociated = marketService.associate(c.getId(), marketId);
         Assert.assertNotEquals(null, marketAssociated);
         Market marketAssociated2 = marketService.associate(c.getId(), marketId);
@@ -112,23 +124,35 @@ public class MarketTest {
     }
 
     @Test
-    public void t2_getMarkets() {
+    public void t3_addRemoveProductMarketShelf() {
 
-        List<Market> markets = marketService.findAll();
-        for (Market m : markets) {
-            System.out.println(m.getId() + " " + m.getName());
-            marketId = m.getId();
-        }
+        Product p1 = productService.findAll("Urun1").get(0);
+        Product p2 = productService.findAll("Urun2").get(0);
+        Market market = marketService.findAll().get(0);
+        Assert.assertNotNull(market);
 
-        Assert.assertEquals(false, marketService.findOne(marketId).isActive());
-        marketService.activate(marketId, true);
-        Assert.assertEquals(true, marketService.findOne(marketId).isActive());
+        marketService.addProductToShelf(market.getId(), new Product(p1.getId(), new Price(10, 90)));
+        market = marketService.findOne(market.getId());
+        Assert.assertEquals(1, market.getProducts().size());
+
+        // update existing product on the shelf
+        marketService.addProductToShelf(market.getId(), new Product(p1.getId(), new Price(9, 90)));
+        market = marketService.findOne(market.getId());
+        Assert.assertEquals(1, market.getProducts().size());
+
+        marketService.addProductToShelf(market.getId(), new Product(p2.getId(), new Price(5, 00)));
+        market = marketService.findOne(market.getId());
+        Assert.assertEquals(2, market.getProducts().size());
+
+        marketService.removeProductToShelf(market.getId(), new Product(p2.getId(), null));
+        market = marketService.findOne(market.getId());
+        Assert.assertEquals(1, market.getProducts().size());
     }
 
     @Test
-    public void t3_createCampaign() throws ParseException {
+    public void t4_createCampaign() throws ParseException {
 
-        List<Product> products = productRepository.findByNameContaining("run");
+        List<Product> products = productService.findAll("run");
         Assert.assertEquals(3, products.size());
 
         Market market = marketService.findAll().get(0);
@@ -160,9 +184,8 @@ public class MarketTest {
         }
     }
 
-
     @Test
-    public void t4_removeCampaign() {
+    public void t5_removeCampaign() {
         //Campaign c1 = campaignService.findAll().get(0);
         System.out.println("Removing campaign id: " + campaignId);
         Assert.assertEquals(2, campaignService.findAll(marketId).size());

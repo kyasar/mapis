@@ -83,10 +83,21 @@ public class Product {
     }
 
     @Override
-    public boolean equals(Object p) {
-        if (this.getId().equals(((Product) p).getId()))
-            return true;
-        else
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        if (!id.equals(product.id)) return false;
+        return barcode != null ? barcode.equals(product.barcode) : product.barcode == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + (barcode != null ? barcode.hashCode() : 0);
+        return result;
     }
 }

@@ -3,6 +3,7 @@ package com.cherchy.markod.service;
 import com.cherchy.markod.model.Campaign;
 import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
+import com.cherchy.markod.model.Product;
 
 import java.util.List;
 
@@ -36,5 +37,9 @@ public interface MarketService {
     Market activate(String id, boolean state);
 
     List<Customer> getFollowers(String id);
+
+    Product addProductToShelf(String mid, Product p);
+
+    Product removeProductToShelf(String mid, Product p);
 
 }

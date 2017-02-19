@@ -3,6 +3,7 @@ package com.cherchy.markod.service.impl;
 import com.cherchy.markod.model.Campaign;
 import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
+import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.CustomerRepository;
 import com.cherchy.markod.repository.MarketRepository;
 import com.cherchy.markod.service.CampaignService;
@@ -134,5 +135,34 @@ public class MarketServiceImpl implements MarketService {
         Query query = new Query();
         query.addCriteria(Criteria.where("followingMarkets").in(id));
         return mongoTemplate.find(query, Customer.class);
+    }
+
+    @Override
+    public Product addProductToShelf(String mid, Product p) {
+        Market market = marketRepository.findOne(mid);
+        if (market == null)
+            return null;
+
+        if (market.getProducts().contains(p)) {
+            market.getProducts().remove(p);
+        }
+        market.getProducts().add(p);
+        if (marketRepository.save(market) == null)
+            return null;
+        return p;
+    }
+
+    @Override
+    public Product removeProductToShelf(String mid, Product p) {
+        Market market = marketRepository.findOne(mid);
+        if (market == null)
+            return null;
+
+        if (market.getProducts().contains(p)) {
+            market.getProducts().remove(p);
+        }
+        if (marketRepository.save(market) == null)
+            return null;
+        return p;
     }
 }

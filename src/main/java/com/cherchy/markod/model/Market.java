@@ -9,7 +9,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Document(collection = "markets")
 public class Market {
@@ -30,10 +32,16 @@ public class Market {
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private Point location;
 
+    /*
+    Products which the market sells
+     */
+    private Set<Product> products;
+
     public Market(String name, String address, Point location) {
         this.name = name;
         this.address = address;
         this.location = location;
+        this.products = new HashSet<>();
     }
 
     public Market(String id) {
@@ -82,15 +90,26 @@ public class Market {
         this.location = location;
     }
 
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        return result;
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 
     @Override
     public boolean equals(Object o) {
-        return this.getId().equals(((Market) o).getId());
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Market market = (Market) o;
+
+        return id.equals(market.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }
