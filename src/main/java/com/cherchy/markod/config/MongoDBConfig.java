@@ -43,9 +43,4 @@ public class MongoDBConfig {
         */
         return new MongoTemplate(mongoDbFactory());
     }
-
-    @Bean
-    public GridFsTemplate gridFsTemplate() throws Exception {
-        return new GridFsTemplate(mongoDbFactory(), new MappingMongoConverter(mongoDbFactory(), new MongoMappingContext()));
-    }
 }
