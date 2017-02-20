@@ -126,7 +126,7 @@ public class MarketTest {
     @Test
     public void t3_addRemoveProductMarketShelf() {
 
-        Product p1 = productService.findAll("Urun1").get(0);
+        Product p1 = productService.findAll("uRUN1").get(0);
         Product p2 = productService.findAll("Urun2").get(0);
         Market market = marketService.findAll().get(0);
         Assert.assertNotNull(market);

@@ -7,6 +7,7 @@ import com.cherchy.markod.repository.ProductRepository;
 import com.cherchy.markod.service.CampaignService;
 import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
+import com.cherchy.markod.service.ProductService;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -50,7 +51,7 @@ public class CampaignTest {
     private CustomerService customerService;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     private static String campaignId;
     private static String marketId;
@@ -65,7 +66,7 @@ public class CampaignTest {
     @Test
     public void t1_createPublicCampaign() throws ParseException {
 
-        List<Product> products = productRepository.findByNameContaining("run");
+        List<Product> products = productService.findAll("run");
         Assert.assertEquals(3, products.size());
 
         Market market = marketService.findAll().get(0);
@@ -92,7 +93,7 @@ public class CampaignTest {
     @Test
     public void t2_createPrivateCampaign() throws ParseException {
 
-        List<Product> products = productRepository.findByNameContaining("run");
+        List<Product> products = productService.findAll("run");
         Assert.assertEquals(3, products.size());
 
         Market market = marketService.findOne(marketId);
@@ -126,7 +127,7 @@ public class CampaignTest {
 
     @Test
     public void t4_updateCampaign() throws ParseException {
-        Product product = productRepository.findByNameContaining("run3").get(0);
+        Product product = productService.findAll("run").get(0);
         Campaign c = campaignService.findOne(campaignId);
 
         Assert.assertEquals(3, c.getProducts().size());
