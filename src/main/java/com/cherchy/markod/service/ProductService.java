@@ -1,12 +1,18 @@
 package com.cherchy.markod.service;
 
 import com.cherchy.markod.model.Category;
+import com.cherchy.markod.model.Market;
 import com.cherchy.markod.model.Product;
 import org.bson.types.ObjectId;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.geo.Point;
 
 import java.util.List;
 
 public interface ProductService {
+
+    Product findOne(String id);
 
     List<Product> findAll();
 
@@ -14,7 +20,7 @@ public interface ProductService {
 
     List<Product> findAll(Category category);
 
-    Product findOne(String id);
+    List<Product> findByLocationNear(Product p, Point location, Distance distance);
 
     Product create(Product p);
 

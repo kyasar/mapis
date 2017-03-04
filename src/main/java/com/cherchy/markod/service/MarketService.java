@@ -4,6 +4,8 @@ import com.cherchy.markod.model.Campaign;
 import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
 import com.cherchy.markod.model.Product;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Point;
 
 import java.util.List;
 
@@ -12,6 +14,8 @@ public interface MarketService {
     List<Market> findAll();
 
     Market findOne(String id);
+
+    List<Market> findByLocationNear(Point location, Distance distance);
 
     boolean exists(String id);
 

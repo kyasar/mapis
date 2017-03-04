@@ -1,11 +1,15 @@
 package com.cherchy.markod.service.impl;
 
 import com.cherchy.markod.model.Category;
+import com.cherchy.markod.model.Market;
 import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.ProductRepository;
 import com.cherchy.markod.service.CategoryService;
+import com.cherchy.markod.service.MarketService;
 import com.cherchy.markod.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -25,6 +30,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private MarketService marketService;
+
+
+    @Override
+    public Product findOne(String id) {
+        return productRepository.findOne(id);
+    }
 
     @Override
     public List<Product> findAll() {
@@ -49,8 +63,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product findOne(String id) {
-        return productRepository.findOne(id);
+    public List<Product> findByLocationNear(Product product, Point location, Distance distance)
+    {
+        List<Market> nearbyMarkets = marketService.findByLocationNear(location, distance);
+        List<Product> productResults = new ArrayList<>();
+
+        if (nearbyMarkets.size() == 0)
+            return productResults;
+
+        for (Market market : nearbyMarkets)
+        {
+            if (market.getProducts().contains(product))
+            {
+                market.getProducts().stream().forEach(p -> {
+                    if (p.equals(product)) {
+                        productResults.add(p);
+                    }
+                });
+            }
+        }
+
+        return productResults;
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
 import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -46,6 +47,26 @@ public class MarketServiceImpl implements MarketService {
     @Override
     public Market findOne(String id) {
         return marketRepository.findOne(id);
+    }
+
+    @Override
+    public List<Market> findByLocationNear(Point location, Distance distance) {
+        Query query = new Query();
+        Circle circle = new Circle(location, distance);
+        query.addCriteria(Criteria.where("location").withinSphere(circle));
+        return mongoTemplate.find(query, Market.class);
+        /*
+        List<Market> markets = null;
+        GeoResults<Market> geoResults = marketRepository.findByLocationNear(location, distance);
+        if (geoResults.getContent().size() > 0) {
+            markets = new ArrayList<>();
+
+            for (GeoResult<Market> geoResult : geoResults) {
+                markets.add(geoResult.getContent());
+            }
+        }
+        */
+        //return markets;
     }
 
     @Override

@@ -89,15 +89,12 @@ public class Product {
 
         Product product = (Product) o;
 
-        if (!id.equals(product.id)) return false;
-        return barcode != null ? barcode.equals(product.barcode) : product.barcode == null;
+        return id.equals(product.id);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + (barcode != null ? barcode.hashCode() : 0);
-        return result;
+        return id.hashCode();
     }
 }
