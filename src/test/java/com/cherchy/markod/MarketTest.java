@@ -74,36 +74,38 @@ public class MarketTest {
 
         List<Market> markets = Arrays.asList(
                 new Market("Altunbilekler", "address 1", new Point(39.894177, 32.801571)),
-                new Market("Migros", "address 2", new Point(39.893387, 32.79788)),
+                new Market("Migros", "address 2", new Point(39.893329, 32.797990)),
                 new Market("Cagdas", "address 3", new Point(39.892827, 32.799082)),
                 new Market("Kiler", "address 4", new Point(39.895, 32.797837)),
-                new Market("Makro", "address 5", new Point(39.889732, 32.800627))
+                new Market("Makro", "address 5", new Point(39.88944557, 32.8070426))
         );
 
-        for (Market m : markets) {
-            Market created = marketService.create(m);
-            if (created != null) {
-                System.out.println("Market created: " + created.getId());
-            } else {
-                System.err.println("Market NOT created: " + m.getId());
-            }
-        }
+        Market altunbilekler = marketService.create(markets.get(0));
+        Market migros = marketService.create(markets.get(1));
+        Market cagdas = marketService.create(markets.get(2));
+        Market kiler = marketService.create(markets.get(3));
+        Market makro = marketService.create(markets.get(4));
+
         Assert.assertEquals(5, marketService.findAll().size());
 
-        List<Market> markets1 = marketService.findAll();
-        Market m1 = markets1.get(0);
-        Market m2 = markets1.get(1);
-        Market m3 = markets1.get(2);
+        // Altunbilekler - 3 products
+        marketService.addProductToShelf(altunbilekler.getId(), new Product(p1.getId(), new Price(10, 50)));
+        marketService.addProductToShelf(altunbilekler.getId(), new Product(p1.getId(), new Price(9, 50)));
+        marketService.addProductToShelf(altunbilekler.getId(), new Product(p2.getId(), new Price(5, 50)));
+        marketService.addProductToShelf(altunbilekler.getId(), new Product(p3.getId(), new Price(20, 0)));
 
-        marketService.addProductToShelf(m1.getId(), new Product(p1.getId(), new Price(10, 50)));
-        marketService.addProductToShelf(m2.getId(), new Product(p1.getId(), new Price(9, 50)));
+        // Migros
+        marketService.addProductToShelf(migros.getId(), new Product(p1.getId(), new Price(8, 50)));
+        marketService.addProductToShelf(migros.getId(), new Product(p2.getId(), new Price(6, 50)));
 
-        marketService.addProductToShelf(m1.getId(), new Product(p2.getId(), new Price(5, 50)));
-        marketService.addProductToShelf(m1.getId(), new Product(p3.getId(), new Price(20, 0)));
+        // Makro
+        marketService.addProductToShelf(makro.getId(), new Product(p1.getId(), new Price(10, 0)));
+        marketService.addProductToShelf(makro.getId(), new Product(p2.getId(), new Price(5, 20)));
+        marketService.addProductToShelf(makro.getId(), new Product(p2.getId(), new Price(5, 25)));
 
-        Assert.assertEquals(3, marketService.findOne(m1.getId()).getProducts().size());
-        Assert.assertEquals(1, marketService.findOne(m2.getId()).getProducts().size());
-        Assert.assertEquals(0, marketService.findOne(m3.getId()).getProducts().size());
+        Assert.assertEquals(3, marketService.findOne(altunbilekler.getId()).getProducts().size());
+        Assert.assertEquals(2, marketService.findOne(migros.getId()).getProducts().size());
+        Assert.assertEquals(2, marketService.findOne(makro.getId()).getProducts().size());
     }
 
     @Test
@@ -111,12 +113,36 @@ public class MarketTest {
 
         Product productSearch = productService.findAll("Urun1").get(0);
         Assert.assertNotNull(productSearch);
+        Point me = new Point(39.893750, 32.802022);
 
-        List<Product> urun1Results = productService.findByLocationNear(productSearch,
-                new Point(39.893387, 32.79788), new Distance(0.2, Metrics.KILOMETERS));
+        List<Market> results = productService.findByLocationNear(productSearch, me, new Distance(0.49, Metrics.KILOMETERS));
+        Assert.assertNotNull(results);
+        Assert.assertEquals(2, results.size());
+        for (Market market : results) {
+            System.out.println(market.getName() + " " + market.getLocation().toString());
+            for (Product product : market.getProducts()) {
+                System.out.println("    -> " + product.getName() + " " + product.getPrice().toString());
+            }
+        }
 
-        for (Product p : urun1Results) {
-            System.out.println(p.getName() + " " + p.getPrice().toString());
+        results = productService.findByLocationNear(productSearch, me, new Distance(0.5, Metrics.KILOMETERS));
+        Assert.assertNotNull(results);
+        Assert.assertEquals(2, results.size());
+        for (Market market : results) {
+            System.out.println(market.getName() + " " + market.getLocation().toString());
+            for (Product product : market.getProducts()) {
+                System.out.println("    -> " + product.getName() + " " + product.getPrice().toString());
+            }
+        }
+
+        results = productService.findByLocationNear(productSearch, me, new Distance(1.5, Metrics.KILOMETERS));
+        Assert.assertNotNull(results);
+        Assert.assertEquals(3, results.size());
+        for (Market market : results) {
+            System.out.println(market.getName() + " " + market.getLocation().toString());
+            for (Product product : market.getProducts()) {
+                System.out.println("    -> " + product.getName() + " " + product.getPrice().toString());
+            }
         }
     }
 }

@@ -50,6 +50,15 @@ public class Market {
 
     public Market() { }
 
+    // Used to return in product search results as copy constructor
+    public Market(Market market) {
+        this.id = market.getId();
+        this.name = market.getName();
+        this.address = market.getAddress();
+        this.location = market.getLocation();
+        this.products = new HashSet<>();
+    }
+
     public String getId() {
         return id;
     }
