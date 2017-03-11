@@ -96,7 +96,7 @@ public class MarketTest {
 
         // Migros
         marketService.addProductToShelf(migros.getId(), new Product(p1.getId(), new Price(8, 50)));
-        marketService.addProductToShelf(migros.getId(), new Product(p2.getId(), new Price(6, 50)));
+        marketService.addProductToShelf(migros.getId(), new Product(p3.getId(), new Price(6, 50)));
 
         // Makro
         marketService.addProductToShelf(makro.getId(), new Product(p1.getId(), new Price(10, 0)));
@@ -111,11 +111,13 @@ public class MarketTest {
     @Test
     public void t1_findMarketsByLocation() {
 
-        Product productSearch = productService.findAll("Urun1").get(0);
-        Assert.assertNotNull(productSearch);
+        Product product1 = productService.findAll("Urun1").get(0);
+        Assert.assertNotNull(product1);
+        Product product2 = productService.findAll("Urun2").get(0);
+        Assert.assertNotNull(product2);
         Point me = new Point(39.893750, 32.802022);
 
-        List<Market> results = productService.findByLocationNear(productSearch, me, new Distance(0.49, Metrics.KILOMETERS));
+        List<Market> results = productService.findByLocationNear(product1, me, new Distance(0.49, Metrics.KILOMETERS));
         Assert.assertNotNull(results);
         Assert.assertEquals(2, results.size());
         for (Market market : results) {
@@ -125,7 +127,7 @@ public class MarketTest {
             }
         }
 
-        results = productService.findByLocationNear(productSearch, me, new Distance(0.5, Metrics.KILOMETERS));
+        results = productService.findByLocationNear(product1, me, new Distance(0.5, Metrics.KILOMETERS));
         Assert.assertNotNull(results);
         Assert.assertEquals(2, results.size());
         for (Market market : results) {
@@ -135,7 +137,7 @@ public class MarketTest {
             }
         }
 
-        results = productService.findByLocationNear(productSearch, me, new Distance(1.5, Metrics.KILOMETERS));
+        results = productService.findByLocationNear(Arrays.asList(product1, product2), me, new Distance(1.5, Metrics.KILOMETERS));
         Assert.assertNotNull(results);
         Assert.assertEquals(3, results.size());
         for (Market market : results) {

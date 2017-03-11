@@ -89,6 +89,37 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Market> findByLocationNear(List<Product> products, Point location, Distance distance) {
+        List<Market> nearbyMarkets = marketService.findByLocationNear(location, distance);
+        List<Market> searchResults = new ArrayList<>();
+
+        if (nearbyMarkets.size() == 0)
+            return searchResults;
+
+        for (Market market : nearbyMarkets)
+        {
+            Market marketHasProduct = new Market(market);
+
+            for (Product product : products)
+            {
+                if (market.getProducts().contains(product)) {
+                    market.getProducts().stream().forEach(p -> {
+                        if (p.equals(product)) {
+                            marketHasProduct.getProducts().add(p);
+                        }
+                    });
+                }
+            }
+            // any of search products found in this market ?
+            if (marketHasProduct.getProducts().size() > 0) {
+                searchResults.add(marketHasProduct);
+            }
+        }
+
+        return searchResults;
+    }
+
+    @Override
     public Product create(Product p) {
         if (p.getId() != null) {
             return null;

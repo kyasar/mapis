@@ -20,7 +20,9 @@ public interface ProductService {
 
     List<Product> findAll(Category category);
 
-    List<Market> findByLocationNear(Product p, Point location, Distance distance);
+    List<Market> findByLocationNear(Product product, Point location, Distance distance);
+
+    List<Market> findByLocationNear(List<Product> products, Point location, Distance distance);
 
     Product create(Product p);
 
