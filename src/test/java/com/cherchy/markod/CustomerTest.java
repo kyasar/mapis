@@ -1,10 +1,14 @@
 package com.cherchy.markod;
 
+import com.cherchy.markod.model.Category;
 import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
+import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.MarketRepository;
+import com.cherchy.markod.service.CategoryService;
 import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
+import com.cherchy.markod.service.ProductService;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -35,12 +39,37 @@ public class CustomerTest {
     private MarketService marketService;
 
     @Autowired
-    private MarketRepository marketRepository;
+    private ProductService productService;
+
+    @Autowired
+    private CategoryService categoryService;
 
 
     @Test
     public void t0_setUp() {
         mongoTemplate.remove(new Query(), "customers");
+        mongoTemplate.remove(new Query(), "products");
+        mongoTemplate.remove(new Query(), "categories");
+
+        Category c1 = categoryService.create(new Category("Meyve", null));
+        Assert.assertNotNull(c1);
+        Assert.assertNotNull(categoryService.create(new Category("Armut", c1.getId())));
+        Assert.assertNotNull(categoryService.create(new Category("Elma", c1.getId())));
+        Assert.assertNotNull(categoryService.create(new Category("Muz", c1.getId())));
+
+        Category category = categoryService.findOne("Armut");
+        Assert.assertNotNull(category);
+
+        productService.create(new Product("Deveci Armut", "91222", category.getId()));
+        productService.create(new Product("Antalya Armut", "91223", category.getId()));
+        productService.create(new Product("Deveci Armut", "91224", category.getId()));
+
+        category = categoryService.findOne("Elma");
+        Assert.assertNotNull(category);
+        productService.create(new Product("StarKing Elma", "78001", category.getId()));
+        productService.create(new Product("GreenSmith Elma", "78001", category.getId()));
+
+        Assert.assertEquals(5, productService.findAll().size());
     }
 
     @Test
@@ -61,11 +90,11 @@ public class CustomerTest {
     @Test
     public void t2_followMarket()
     {
-        GeoResults<Market> markets =  marketRepository.findByLocationNear(
+        List<Market> markets =  marketService.findByLocationNear(
                 new Point(39.893927, 32.802670), new Distance(1000, Metrics.KILOMETERS));
-        Assert.assertTrue(markets.getContent().size() >= 2);
-        Market m1 = markets.getContent().get(0).getContent();
-        Market m2 = markets.getContent().get(1).getContent();
+        Assert.assertTrue(markets.size() >= 2);
+        Market m1 = markets.get(0);
+        Market m2 = markets.get(1);
         mid1 = m1.getId();
         mid2 = m2.getId();
 
@@ -97,5 +126,22 @@ public class CustomerTest {
 
         Assert.assertEquals(2, marketService.getFollowers(mid1).size());
         Assert.assertEquals(1, marketService.getFollowers(mid2).size());
+    }
+
+    @Test
+    public void t4_followProducts()
+    {
+        Customer customer = customerService.findByEmail("yasar@gmail.com");
+        Assert.assertNotNull(customer);
+        List<Product> products = productService.findAll("Deveci Armut");
+        Assert.assertNotEquals(products.size(), 0);
+
+        Assert.assertEquals(customer.getFollowProducts().size(), 0);
+        customer = customerService.addProductToWishList(customer.getId(), products.get(0).getId());
+        Assert.assertEquals(customer.getFollowProducts().size(), 1);
+        customer = customerService.addProductToWishList(customer.getId(), products.get(0).getId());
+        Assert.assertEquals(customer.getFollowProducts().size(), 1);
+        customer = customerService.removeProductFromWishList(customer.getId(), products.get(0).getId());
+        Assert.assertEquals(customer.getFollowProducts().size(), 0);
     }
 }

@@ -26,6 +26,10 @@ public interface CustomerService {
 
     boolean unfollowMarket(String cid, String mid);
 
+    Customer addProductToWishList(String cid, String pid);
+
+    Customer removeProductFromWishList(String cid, String pid);
+
     Customer addPoints(String cid, int points);
 
     Customer deletePoints(String cid, int points);

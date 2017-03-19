@@ -2,11 +2,14 @@ package com.cherchy.markod.service.impl;
 
 import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
+import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.CustomerRepository;
 import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
+import com.cherchy.markod.service.ProductService;
 import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -28,6 +31,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private MarketService marketService;
+
+    @Autowired
+    private ProductService productService;
 
     @Override
     public List<Customer> findAll() {
@@ -108,6 +114,36 @@ public class CustomerServiceImpl implements CustomerService {
         if (res.getN() == 0)
             return false;
         return true;
+    }
+
+    @Override
+    public Customer addProductToWishList(String cid, String pid)
+    {
+        // Check product is existed
+        Product product = productService.findOne(pid);
+        if (product == null)
+            return null;
+
+        Query query = new Query(Criteria.where("_id").is(cid));
+        Update update = new Update();
+        update.addToSet("followProducts", product);
+        return mongoTemplate.findAndModify(query, update,
+                FindAndModifyOptions.options().returnNew(true), Customer.class);
+    }
+
+    @Override
+    public Customer removeProductFromWishList(String cid, String pid)
+    {
+        // Check product is existed
+        Product product = productService.findOne(pid);
+        if (product == null)
+            return null;
+
+        Query query = new Query(Criteria.where("_id").is(cid));
+        Update update = new Update();
+        update.pull("followProducts", product);
+        return mongoTemplate.findAndModify(query, update,
+                FindAndModifyOptions.options().returnNew(true), Customer.class);
     }
 
     @Override

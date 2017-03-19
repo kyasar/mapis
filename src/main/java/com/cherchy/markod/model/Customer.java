@@ -38,6 +38,12 @@ public class Customer {
 
     private Set<Market> followingMarkets;
 
+    @DBRef
+    private Set<Product> followProducts;
+
+    @DBRef
+    private Set<Category> followCategories;
+
     public Customer(
             String name,
             String surname,
@@ -51,6 +57,8 @@ public class Customer {
         this.roles = new HashSet<String>();
         this.roles.add("ROLE_USER");
         this.followingMarkets = new HashSet<>();
+        this.followProducts = new HashSet<>();
+        this.followCategories = new HashSet<>();
     }
 
     public Customer(String id) {
@@ -131,4 +139,19 @@ public class Customer {
         this.followingMarkets = followingMarkets;
     }
 
+    public Set<Product> getFollowProducts() {
+        return followProducts;
+    }
+
+    public void setFollowProducts(Set<Product> followProducts) {
+        this.followProducts = followProducts;
+    }
+
+    public Set<Category> getFollowCategories() {
+        return followCategories;
+    }
+
+    public void setFollowCategories(Set<Category> followCategories) {
+        this.followCategories = followCategories;
+    }
 }
