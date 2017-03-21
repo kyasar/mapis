@@ -51,23 +51,25 @@ public class CustomerTest {
         mongoTemplate.remove(new Query(), "products");
         mongoTemplate.remove(new Query(), "categories");
 
-        Category c1 = categoryService.create(new Category("Meyve", null));
-        Assert.assertNotNull(c1);
-        Assert.assertNotNull(categoryService.create(new Category("Armut", c1.getId())));
-        Assert.assertNotNull(categoryService.create(new Category("Elma", c1.getId())));
-        Assert.assertNotNull(categoryService.create(new Category("Muz", c1.getId())));
+        Category meyveCat = categoryService.create(new Category("Meyve", null));
+        Assert.assertNotNull(meyveCat);
+        Category armutCat = categoryService.create(new Category("Armut", meyveCat.getId()));
+        Assert.assertNotNull(armutCat);
+        Category elmaCat = categoryService.create(new Category("Elma", meyveCat.getId()));
+        Assert.assertNotNull(elmaCat);
+        Category muzCat = categoryService.create(new Category("Muz", meyveCat.getId()));
+        Assert.assertNotNull(muzCat);
 
-        Category category = categoryService.findOne("Armut");
-        Assert.assertNotNull(category);
+        armutCat = categoryService.findOne(armutCat.getId());
+        Assert.assertNotNull(armutCat);
+        productService.create(new Product("Deveci Armut", "91222", armutCat.getId()));
+        productService.create(new Product("Antalya Armut", "91223", armutCat.getId()));
+        productService.create(new Product("Deveci Armut", "91224", armutCat.getId()));
 
-        productService.create(new Product("Deveci Armut", "91222", category.getId()));
-        productService.create(new Product("Antalya Armut", "91223", category.getId()));
-        productService.create(new Product("Deveci Armut", "91224", category.getId()));
-
-        category = categoryService.findOne("Elma");
-        Assert.assertNotNull(category);
-        productService.create(new Product("StarKing Elma", "78001", category.getId()));
-        productService.create(new Product("GreenSmith Elma", "78001", category.getId()));
+        elmaCat = categoryService.findOne(elmaCat.getId());
+        Assert.assertNotNull(elmaCat);
+        productService.create(new Product("StarKing Elma", "78001", elmaCat.getId()));
+        productService.create(new Product("GreenSmith Elma", "78001", elmaCat.getId()));
 
         Assert.assertEquals(5, productService.findAll().size());
     }
@@ -141,7 +143,30 @@ public class CustomerTest {
         Assert.assertEquals(customer.getFollowProducts().size(), 1);
         customer = customerService.addProductToWishList(customer.getId(), products.get(0).getId());
         Assert.assertEquals(customer.getFollowProducts().size(), 1);
-        customer = customerService.removeProductFromWishList(customer.getId(), products.get(0).getId());
-        Assert.assertEquals(customer.getFollowProducts().size(), 0);
+        customer = customerService.removeProductFromWishList(customer.getId() + "1", products.get(0).getId());
+        Assert.assertNull(customer);
+        //Assert.assertEquals(customer.getFollowProducts().size(), 1);
+    }
+
+    @Test
+    public void t5_followCategories()
+    {
+        Customer customer = customerService.findByEmail("yasar@gmail.com");
+        Assert.assertNotNull(customer);
+        Assert.assertEquals(customer.getFollowCategories().size(), 0);
+
+        Category meyveCat = categoryService.findAll("Meyve").get(0);
+        Assert.assertNotNull(meyveCat);
+        System.out.println(meyveCat.getName() + " " + meyveCat.getId());
+
+        customer = customerService.addCategoryToWishList(customer.getId(), meyveCat.getId());
+        Assert.assertEquals(customer.getFollowCategories().size(), 1);
+
+        customer = customerService.addCategoryToWishList(customer.getId(), meyveCat.getId());
+        Assert.assertEquals(customer.getFollowCategories().size(), 1);
+
+        customer = customerService.removeCategoryFromWishList(customer.getId(), meyveCat.getId());
+        Assert.assertNotNull(customer);
+        Assert.assertEquals(customer.getFollowCategories().size(), 0);
     }
 }

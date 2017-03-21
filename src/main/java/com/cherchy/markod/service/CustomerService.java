@@ -1,9 +1,7 @@
 package com.cherchy.markod.service;
 
 import com.cherchy.markod.model.Customer;
-import com.cherchy.markod.model.Market;
 
-import javax.management.relation.Role;
 import java.util.List;
 
 public interface CustomerService {
@@ -29,6 +27,10 @@ public interface CustomerService {
     Customer addProductToWishList(String cid, String pid);
 
     Customer removeProductFromWishList(String cid, String pid);
+
+    Customer addCategoryToWishList(String customerId, String categoryId);
+
+    Customer removeCategoryFromWishList(String customerId, String categoryId);
 
     Customer addPoints(String cid, int points);
 

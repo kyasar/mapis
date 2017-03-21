@@ -1,9 +1,10 @@
 package com.cherchy.markod.service.impl;
 
+import com.cherchy.markod.model.Category;
 import com.cherchy.markod.model.Customer;
-import com.cherchy.markod.model.Market;
 import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.CustomerRepository;
+import com.cherchy.markod.service.CategoryService;
 import com.cherchy.markod.service.CustomerService;
 import com.cherchy.markod.service.MarketService;
 import com.cherchy.markod.service.ProductService;
@@ -34,6 +35,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Override
     public List<Customer> findAll() {
@@ -142,6 +146,36 @@ public class CustomerServiceImpl implements CustomerService {
         Query query = new Query(Criteria.where("_id").is(cid));
         Update update = new Update();
         update.pull("followProducts", product);
+        return mongoTemplate.findAndModify(query, update,
+                FindAndModifyOptions.options().returnNew(true), Customer.class);
+    }
+
+    @Override
+    public Customer addCategoryToWishList(String customerId, String categoryId)
+    {
+        // Check category is existed
+        Category category = categoryService.findOne(categoryId);
+        if (category == null)
+            return null;
+
+        Query query = new Query(Criteria.where("_id").is(customerId));
+        Update update = new Update();
+        update.addToSet("followCategories", category);
+        return mongoTemplate.findAndModify(query, update,
+                FindAndModifyOptions.options().returnNew(true), Customer.class);
+    }
+
+    @Override
+    public Customer removeCategoryFromWishList(String customerId, String categoryId)
+    {
+        // Check category is existed
+        Category category = categoryService.findOne(categoryId);
+        if (category == null)
+            return null;
+
+        Query query = new Query(Criteria.where("_id").is(customerId));
+        Update update = new Update();
+        update.pull("followCategories", category);
         return mongoTemplate.findAndModify(query, update,
                 FindAndModifyOptions.options().returnNew(true), Customer.class);
     }
