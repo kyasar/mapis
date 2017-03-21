@@ -11,11 +11,15 @@ public interface CategoryService {
 
     List<Category> findAll();
 
-    List<Category> findAll(String parentCategoryId);
+    List<Category> findAll(Category category);
 
-    Category findOne(String name);
+    List<Category> findAll(String name);
+
+    Category findOne(String id);
 
     Category create(Category category);
+
+    Category update(Category category);
 
     void delete(String id);
 }

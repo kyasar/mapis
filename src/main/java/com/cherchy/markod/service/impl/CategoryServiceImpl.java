@@ -40,11 +40,13 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
-    public List<Category> findAll() {
+    public List<Category> findAll()
+    {
         return categoryRepository.findAll();
     }
 
-    public void findAllSubCategories(String id, List<Category> categories) {
+    private void findAllSubCategories(String id, List<Category> categories)
+    {
         Query query = new Query();
         query.addCriteria(Criteria.where("parentCategoryId").is(id));
         List<Category> subCategories = mongoTemplate.find(query, Category.class);
@@ -59,28 +61,45 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> findAll(String parentCategoryId) {
-        //Query query = new Query();
-        //query.addCriteria(Criteria.where("parentCategoryId").is(parentCategoryId));
-        //return mongoTemplate.find(query, Category.class);
+    public List<Category> findAll(Category category)
+    {
         List<Category> categories = new ArrayList<>();
-        findAllSubCategories(parentCategoryId, categories);
+        findAllSubCategories(category.getId(), categories);
         return categories;
     }
 
     @Override
-    public Category findOne(String name) {
-        return categoryRepository.findByNameIgnoreCase(name);
+    public List<Category> findAll(String name)
+    {
+        return categoryRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Override
-    public Category create(Category category) {
+    public Category findOne(String id)
+    {
+        return categoryRepository.findOne(id);
+    }
+
+    @Override
+    public Category create(Category category)
+    {
         return categoryRepository.save(category);
     }
 
     @Override
-    public void delete(String id) {
-        List<Category> subCategories = findAll(id);
+    public Category update(Category category)
+    {
+        return null;
+    }
+
+    @Override
+    public void delete(String id)
+    {
+        Category categoryToDelete = categoryRepository.findOne(id);
+        if (categoryToDelete == null)
+            return;
+
+        List<Category> subCategories = findAll(categoryToDelete);
         for (Category category : subCategories)
             delete(category.getId());
         categoryRepository.delete(id);

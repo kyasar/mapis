@@ -57,35 +57,39 @@ public class CategoryTest {
         Assert.assertNotNull(c6);
         Category c7 = categoryService.create(new Category("Ankara", c4.getId()));
         Assert.assertNotNull(c7);
+
+        Category domates = categoryService.create(new Category("Domates", c2.getId()));
+        Assert.assertNotNull(domates);
+        Category biber = categoryService.create(new Category("Biber", c2.getId()));
+        Assert.assertNotNull(biber);
     }
 
     @Test
     public void t2_getAllCategories() {
         // Categories under Meyve
-        Category category = categoryService.findOne("Meyve");
-        Assert.assertNotNull(category);
-        Assert.assertEquals(4, categoryService.findAll(category.getId()).size());
+        List<Category> categories = categoryService.findAll("Meyve");
+        Assert.assertNotNull(categories);
+        Category meyveCat = categories.get(0);
 
         // Categories under Sebze
-        category = categoryService.findOne("Sebze");
-        Assert.assertNotNull(category);
-        Assert.assertEquals(0, categoryService.findAll(category.getId()).size());
+        categories = categoryService.findAll("Sebze");
+        Assert.assertNotNull(categories);
+        Category sebzeCat = categories.get(0);
 
-        // Number of Main Categories
-        Assert.assertEquals(3, categoryService.findAll(null).size());
-
-        // All categories
-        Assert.assertEquals(7, categoryService.findAll().size());
+        Assert.assertEquals(4, categoryService.findAll(meyveCat).size());
+        Assert.assertEquals(2, categoryService.findAll(sebzeCat).size());
     }
 
     @Test
     public void t3_removeCategory() {
-        Category category = categoryService.findOne("Meyve");
-        Assert.assertNotNull(category);
-        Assert.assertEquals(7, categoryService.findAll().size());
+        List<Category> categories = categoryService.findAll("Meyve");
+        Assert.assertNotNull(categories);
+        Assert.assertNotEquals(0, categories.size());
+        Category meyveCat = categories.get(0);
 
-        categoryService.delete(category.getId());
-        Assert.assertEquals(2, categoryService.findAll().size());
+        Assert.assertEquals(9, categoryService.findAll().size());
+        categoryService.delete(meyveCat.getId());
+        Assert.assertEquals(4, categoryService.findAll().size());
     }
 
     @Test
