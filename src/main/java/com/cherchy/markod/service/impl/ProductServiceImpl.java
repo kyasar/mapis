@@ -1,6 +1,7 @@
 package com.cherchy.markod.service.impl;
 
 import com.cherchy.markod.model.Category;
+import com.cherchy.markod.model.Customer;
 import com.cherchy.markod.model.Market;
 import com.cherchy.markod.model.Product;
 import com.cherchy.markod.repository.ProductRepository;
@@ -10,9 +11,11 @@ import com.cherchy.markod.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,25 +39,29 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public Product findOne(String id) {
+    public Product findOne(String id)
+    {
         return productRepository.findOne(id);
     }
 
     @Override
-    public List<Product> findAll() {
+    public List<Product> findAll()
+    {
         return productRepository.findAll();
     }
 
     @Override
-    public List<Product> findAll(String name) {
+    public List<Product> findAll(String name)
+    {
         return productRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Override
-    public List<Product> findAll(Category category) {
+    public List<Product> findAll(Category category)
+    {
         List<Product> products = new ArrayList<>();
 
-        for (Category cat : categoryService.findAll(category.getId())) {
+        for (Category cat : categoryService.findAll(category)) {
             Query query = new Query();
             query.addCriteria(Criteria.where("categoryId").is(cat.getId()));
             products.addAll(mongoTemplate.find(query, Product.class));
@@ -89,7 +96,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Market> findByLocationNear(List<Product> products, Point location, Distance distance) {
+    public List<Market> findByLocationNear(List<Product> products, Point location, Distance distance)
+    {
         List<Market> nearbyMarkets = marketService.findByLocationNear(location, distance);
         List<Market> searchResults = new ArrayList<>();
 
@@ -120,26 +128,39 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product create(Product p) {
-        if (p.getId() != null) {
+    public Product create(Product product)
+    {
+        if (product.getId() != null) {
             return null;
         }
-        return productRepository.save(p);
+        return productRepository.save(product);
     }
 
     @Override
-    public Product update(Product p) {
-        Product pPresent = productRepository.findOne(p.getId().toString());
-        if (pPresent == null) {
+    public Product update(Product product)
+    {
+        Product productPresent = productRepository.findOne(product.getId());
+        if (productPresent == null) {
             // Cannot update
             return null;
         }
 
-        return productRepository.save(p);
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(product.getId()));
+        Update update = new Update();
+        update.set("barcode", product.getBarcode());
+        update.set("name", product.getName());
+        update.set("categoryId", product.getCategoryId());
+
+        return mongoTemplate.findAndModify(query, update,
+                FindAndModifyOptions.options().returnNew(true), Product.class);
     }
 
     @Override
-    public void delete(String id) {
-        productRepository.delete(id);
+    public Product delete(String id)
+    {
+        return mongoTemplate.findAndRemove(
+                new Query().addCriteria(Criteria.where("_id").is(id)),
+                Product.class);
     }
 }

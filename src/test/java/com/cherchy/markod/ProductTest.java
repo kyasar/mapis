@@ -41,7 +41,8 @@ public class ProductTest {
 	private CategoryService categoryService;
 
 	@Test
-	public void t0_setUp() {
+	public void t0_setUp()
+	{
 		mongoTemplate.remove(new Query(), "products");
         mongoTemplate.remove(new Query(), "categories");
 		Category c1 = categoryService.create(new Category("Meyve", null));
@@ -52,15 +53,16 @@ public class ProductTest {
 	}
 
 	@Test
-    public void t1_addProducts() {
-		Category category = categoryService.findOne("Armut");
+    public void t1_addProducts()
+	{
+		Category category = categoryService.findAll("Armut").get(0);
 		Assert.assertNotNull(category);
 
 		productService.create(new Product("Deveci Armut", "91222", category.getId()));
         productService.create(new Product("Antalya Armut", "91223", category.getId()));
-        productService.create(new Product("Deveci Armut", "91224", category.getId()));
+        productService.create(new Product("Yayla Armut", "91224", category.getId()));
 
-        category = categoryService.findOne("Elma");
+        category = categoryService.findAll("Elma").get(0);
         Assert.assertNotNull(category);
         productService.create(new Product("StarKing Elma", "78001", category.getId()));
         productService.create(new Product("GreenSmith Elma", "78001", category.getId()));
@@ -69,12 +71,28 @@ public class ProductTest {
 	}
 
 	@Test
-    public void t2_findByCategory() {
-        Category category = categoryService.findOne("Meyve");
+    public void t2_findByCategory()
+	{
+        Category category = categoryService.findAll("Meyve").get(0);
         Assert.assertNotNull(category);
 
         List<Product> armuts = productService.findAll(category);
         Assert.assertNotNull(armuts);
         Assert.assertEquals(5, armuts.size());
     }
+
+    @Test
+	public void t3_updateProduct()
+	{
+		String newBarcode = "67777";
+		String newName = "Armut Deveci";
+		Product product = productService.findAll("Deveci Armut").get(0);
+		Assert.assertNotNull(product);
+		product.setBarcode(newBarcode);
+		product.setName(newName);
+		product = productService.update(product);
+		Assert.assertNotNull(product);
+		Assert.assertEquals(newBarcode, product.getBarcode());
+		Assert.assertEquals(newName, product.getName());
+	}
 }

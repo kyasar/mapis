@@ -24,9 +24,9 @@ public interface ProductService {
 
     List<Market> findByLocationNear(List<Product> products, Point location, Distance distance);
 
-    Product create(Product p);
+    Product create(Product product);
 
-    Product update(Product p);
+    Product update(Product product);
 
-    void delete(String id);
+    Product delete(String id);
 }
