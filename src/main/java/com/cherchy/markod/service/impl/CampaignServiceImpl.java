@@ -13,6 +13,7 @@ import com.mongodb.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -103,63 +104,51 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public Campaign update(Campaign campaign) {
-        Campaign present = campaignRepository.findOne(campaign.getId());
-        if (present == null) {
-            // Cannot update
+    public Campaign update(Campaign campaign)
+    {
+        if (campaignRepository.findOne(campaign.getId()) == null) {
             return null;
         }
 
-        // Save product list
-        campaign.setProducts(present.getProducts());
-        return campaignRepository.save(campaign);
+        // Update selected fields only
+        Update update = new Update();
+        update.set("title", campaign.getTitle());
+        update.set("active", campaign.isActive());
+        update.set("startDate", campaign.getStartDate());
+        update.set("endDate", campaign.getEndDate());
+
+        return mongoTemplate.findAndModify(new Query(Criteria.where("_id").is(campaign.getId())), update,
+                        FindAndModifyOptions.options().returnNew(true), Campaign.class);
     }
 
     @Override
-    public boolean delete(String id)
+    public Campaign delete(String id)
     {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(id));
-        Campaign removed = mongoTemplate.findAndRemove(query, Campaign.class);
-        if (removed == null)
-            return false;
-        return true;
+        return mongoTemplate.findAndRemove(query, Campaign.class);
     }
 
     @Override
-    public Campaign activate(String id, boolean state) {
-        Campaign campaign = campaignRepository.findOne(id);
-        if (campaign == null)
-            return null;
-        Customer customer = customerService.findOne(campaign.getCustomerId());
-        if (customer == null)
-            return null;
-
-        customerService.addPoints(customer.getId(), POINTS_PUBLIC_CAMPAIGN);
-
-        campaign.setActive(state);
-        return campaignRepository.save(campaign);
-    }
-
-    @Override
-    public boolean addProduct(Product product, String cid) {
+    public Campaign addProduct(Product product, String cid)
+    {
         Product p = productRepository.findOne(product.getId());
         if (p == null)
-            return false;
+            return null;
 
         Campaign campaign = campaignRepository.findOne(cid);
         if (campaign == null)
-            return false;
+            return null;
 
-        if (campaign.getProducts().contains(product)) {
+        // Not allow duplicate products
+        if (campaign.getProducts().contains(product))
+        {
             Product productExisted = campaign.getProducts().get(campaign.getProducts().indexOf(product));
             productExisted.setPrice(product.getPrice());
         }
         else {
             campaign.getProducts().add(new Product(p.getId(), product.getPrice()));
         }
-
-        campaignRepository.save(campaign);
         /*
         WriteResult res = mongoTemplate.updateFirst(
                 new Query(where("_id").is(cid)),
@@ -168,19 +157,18 @@ public class CampaignServiceImpl implements CampaignService {
         if (res.getN() == 0)
             return false;
         */
-
-        return true;
+        return campaignRepository.save(campaign);
     }
 
     @Override
-    public boolean removeProduct(String pid, String cid) {
+    public Campaign removeProduct(String pid, String cid) {
         Product product = productRepository.findOne(pid);
         if (product == null)
-            return false;
+            return null;
 
         Campaign campaign = campaignRepository.findOne(cid);
         if (campaign == null)
-            return false;
+            return null;
 
         System.out.println("Removing product: " + product.getId());
         WriteResult res = mongoTemplate.updateFirst(
@@ -188,9 +176,7 @@ public class CampaignServiceImpl implements CampaignService {
                 new Update().pull("products", new BasicDBObject("_id", product.getId())),
                 Campaign.class);
 
-        if (res.getN() == 0)
-            return false;
-        return true;
+        return campaignRepository.findOne(cid);
     }
 
     @Override

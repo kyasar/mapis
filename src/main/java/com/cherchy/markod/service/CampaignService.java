@@ -13,6 +13,8 @@ public interface CampaignService {
 
     List<Campaign> findAll(String mid);
 
+    List<Campaign> findAll(Date date);
+
     Campaign findOne(String id);
 
     Campaign create(String mid, Campaign campaign);
@@ -21,13 +23,10 @@ public interface CampaignService {
 
     Campaign update(Campaign campaign);
 
-    boolean delete(String id);
+    Campaign delete(String id);
 
-    Campaign activate(String id, boolean state);
+    Campaign addProduct(Product product, String cid);
 
-    boolean addProduct(Product product, String cid);
+    Campaign removeProduct(String pid, String cid);
 
-    boolean removeProduct(String pid, String cid);
-
-    List<Campaign> findAll(Date date);
 }
